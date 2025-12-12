@@ -1,0 +1,68 @@
+variable "resource_group_name" {
+  description = "Name of the resource group"
+  type        = string
+}
+
+variable "location" {
+  description = "Azure region for resources"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment name (dev, test, stage, prod)"
+  type        = string
+}
+
+variable "project_name" {
+  description = "Project name for resource naming"
+  type        = string
+  default     = "ecare"
+}
+
+variable "sku" {
+  description = "SKU for Service Bus (Basic, Standard, Premium)"
+  type        = string
+  default     = "Standard"
+}
+
+variable "capacity" {
+  description = "Messaging units for Premium SKU (1, 2, 4, 8, 16)"
+  type        = number
+  default     = 1
+}
+
+variable "zone_redundant" {
+  description = "Enable zone redundancy (Premium SKU only)"
+  type        = bool
+  default     = false
+}
+
+variable "public_network_access_enabled" {
+  description = "Enable public network access"
+  type        = bool
+  default     = false
+}
+
+variable "minimum_tls_version" {
+  description = "Minimum TLS version"
+  type        = string
+  default     = "1.2"
+}
+
+# Private Endpoint configuration
+variable "subnet_id" {
+  description = "Subnet ID for Private Endpoint"
+  type        = string
+}
+
+variable "private_dns_zone_id" {
+  description = "Private DNS Zone ID for Service Bus"
+  type        = string
+}
+
+variable "tags" {
+  description = "Tags to apply to all resources"
+  type        = map(string)
+  default     = {}
+}
+

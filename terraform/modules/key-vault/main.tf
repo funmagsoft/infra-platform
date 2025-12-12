@@ -1,0 +1,73 @@
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.0"
+    }
+  }
+}
+
+data "azurerm_client_config" "current" {}
+
+# Key Vault
+resource "azurerm_key_vault" "this" {
+  name                = "kv-${var.project_name}-${var.environment}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  sku_name            = var.sku_name
+
+  enabled_for_deployment          = var.enabled_for_deployment
+  enabled_for_disk_encryption     = var.enabled_for_disk_encryption
+  enabled_for_template_deployment = var.enabled_for_template_deployment
+
+  enable_rbac_authorization       = var.enable_rbac_authorization
+  soft_delete_retention_days      = var.soft_delete_retention_days
+  purge_protection_enabled        = var.purge_protection_enabled
+  public_network_access_enabled   = var.public_network_access_enabled
+
+  network_acls {
+    bypass         = "AzureServices"
+    default_action = "Deny"
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "key-vault"
+    }
+  )
+}
+
+# Private Endpoint for Key Vault
+resource "azurerm_private_endpoint" "this" {
+  name                = "${azurerm_key_vault.this.name}-pe"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.subnet_id
+
+  private_service_connection {
+    name                           = "${azurerm_key_vault.this.name}-psc"
+    private_connection_resource_id = azurerm_key_vault.this.id
+    is_manual_connection           = false
+    subresource_names              = ["vault"]
+  }
+
+  private_dns_zone_group {
+    name                 = "vault-dns-zone-group"
+    private_dns_zone_ids = [var.private_dns_zone_id]
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "key-vault"
+    }
+  )
+}
+
