@@ -615,7 +615,7 @@ terraform force-unlock <lock-id>
 
 ```bash
 # Check Storage Account access
-az storage account show --name tfstatefmsecaredev --resource-group rg-ecare-dev
+az storage account show --name tfstatehycomecaredev --resource-group rg-ecare-dev
 
 # Verify RBAC role
 az role assignment list --scope /subscriptions/<sub-id>/resourceGroups/rg-ecare-dev

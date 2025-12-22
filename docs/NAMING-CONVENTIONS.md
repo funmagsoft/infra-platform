@@ -24,4 +24,4 @@ See main infrastructure design document: `INFRASTRUCTURE-DESIGN.md`
 
 - Resource Group: `rg-ecare-dev`
 - Virtual Network: `vnet-ecare-dev`
-- Storage Account: `tfstatefmsecaredev` (state) or `stecaredev` (application data)
+- Storage Account: `tfstatehycomecaredev` (state) or `stecaredev` (application data)

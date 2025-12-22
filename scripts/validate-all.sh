@@ -170,7 +170,7 @@ for ENV in "${ENVIRONMENTS[@]}"; do
   # Check Terraform state
   echo ""
   echo "Checking Terraform State..."
-  STATE_SA="tfstatefmsecare${ENV}"
+  STATE_SA="tfstatehycomecare${ENV}"
   if az storage blob exists \
     --account-name "$STATE_SA" \
     --container-name tfstate \

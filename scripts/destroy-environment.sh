@@ -130,7 +130,7 @@ if terraform apply destroy.tfplan; then
   echo ""
   echo -e "${YELLOW}Note: The following resources were NOT deleted:${NC}"
   echo "  - Resource Group (rg-ecare-${ENV}) - managed outside Terraform"
-  echo "  - Terraform state Storage Account (tfstatefmsecare${ENV}) - created in Phase 0"
+  echo "  - Terraform state Storage Account (tfstatehycomecare${ENV}) - created in Phase 0"
   echo "  - Service Principals and Federated Identity Credentials - created in Phase 0"
   echo ""
   echo "To completely remove the environment, run:"

@@ -23,7 +23,7 @@ echo "✓ DEV environment foundation deployed"
 
 # Check Terraform state from Phase 1
 if az storage blob exists \
-  --account-name tfstatefmsecaredev \
+  --account-name tfstatehycomecaredev \
   --container-name tfstate \
   --name "infra-foundation/terraform.tfstate" \
   --auth-mode login \

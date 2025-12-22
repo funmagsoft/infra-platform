@@ -51,7 +51,7 @@ for ENV in "${ENVIRONMENTS[@]}"; do
   fi
   
   # Check Terraform state from Phase 1 exists
-  STATE_SA="tfstatefmsecare${ENV}"
+  STATE_SA="tfstatehycomecare${ENV}"
   if az storage blob exists \
     --account-name "$STATE_SA" \
     --container-name tfstate \

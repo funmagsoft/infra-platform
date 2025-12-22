@@ -79,7 +79,7 @@ fi
 
 echo ""
 echo "Step 2: Checking backend Storage Account..."
-STATE_SA="tfstatefmsecare${ENV}"
+STATE_SA="tfstatehycomecare${ENV}"
 RG="rg-ecare-${ENV}"
 
 if az storage account show --name "$STATE_SA" --resource-group "$RG" --output none 2>/dev/null; then
