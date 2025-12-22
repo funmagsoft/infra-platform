@@ -87,6 +87,7 @@ module "storage" {
   resource_group_name = data.azurerm_resource_group.main.name
   location            = data.azurerm_resource_group.main.location
   environment         = var.environment
+  organization_name   = var.organization_name
   project_name        = var.project_name
 
   account_tier             = var.storage_account_tier

@@ -108,7 +108,7 @@ variable "user_node_pool_name" {
 variable "user_node_pool_vm_size" {
   description = "VM size for user node pool"
   type        = string
-  default     = "Standard_A2_v2"
+  default     = "Standard_D2s_v3"
 }
 
 variable "user_node_pool_min_count" {

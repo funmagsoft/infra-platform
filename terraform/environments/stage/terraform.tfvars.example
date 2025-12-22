@@ -79,7 +79,7 @@ aks_system_node_pool_os_disk_size_gb = 128
 
 # User node pool
 aks_user_node_pool_enabled           = true
-aks_user_node_pool_vm_size           = "Standard_A2_v2"
+aks_user_node_pool_vm_size           = "Standard_D2s_v3"
 aks_user_node_pool_min_count         = 2
 aks_user_node_pool_max_count         = 5
 aks_user_node_pool_os_disk_size_gb   = 128
@@ -94,7 +94,7 @@ aks_enable_container_insights        = true
 #------------------------------------------------------------------------------
 # Bastion Configuration
 #------------------------------------------------------------------------------
-bastion_vm_size                = "Standard_B1s"
+bastion_vm_size                = "Standard_D2als_v6"
 bastion_admin_username         = "azureuser"
 bastion_ubuntu_sku             = "22_04-lts-gen2"  # 24.04 not available yet
 bastion_allowed_ssh_source_ips = ["0.0.0.0/0"]  # Change to specific IPs in production

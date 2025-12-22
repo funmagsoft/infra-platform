@@ -13,6 +13,12 @@ variable "environment" {
   type        = string
 }
 
+variable "organization_name" {
+  description = "Organization name for resource naming"
+  type        = string
+  default     = "hycom"
+}
+
 variable "project_name" {
   description = "Project name for resource naming"
   type        = string
