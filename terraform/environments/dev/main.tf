@@ -25,7 +25,7 @@ data "terraform_remote_state" "foundation" {
   backend = "azurerm"
   config = {
     resource_group_name  = "rg-ecare-${var.environment}"
-    storage_account_name = "tfstatefmsecare${var.environment}"
+    storage_account_name = "tfstatehycomecare${var.environment}"
     container_name       = "tfstate"
     key                  = "infra-foundation/terraform.tfstate"
     use_azuread_auth     = true
