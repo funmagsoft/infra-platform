@@ -99,3 +99,14 @@ bastion_admin_username         = "azureuser"
 bastion_ubuntu_sku             = "22_04-lts-gen2"  # 24.04 not available yet in all regions
 bastion_allowed_ssh_source_ips = ["0.0.0.0/0"]  # Change to specific IPs in production
 
+# Additional users on bastion (with sudo access)
+# Each user can have multiple SSH public keys
+bastion_additional_users = {
+  marek = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC... marek@example.com"
+  ]
+  darek = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC... darek@example.com"
+  ]
+}
+

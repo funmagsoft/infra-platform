@@ -44,3 +44,15 @@ output "bastion_nsg_id" {
   value       = azurerm_network_security_group.this.id
 }
 
+output "bastion_cloud_init_script" {
+  description = "Generated cloud-init script (decoded, for debugging)"
+  value       = local.cloud_init_script
+  sensitive   = false
+}
+
+output "bastion_cloud_init_base64" {
+  description = "Generated cloud-init script (base64 encoded, as sent to Azure)"
+  value       = local.cloud_init_script != null ? base64encode(local.cloud_init_script) : null
+  sensitive   = false
+}
+

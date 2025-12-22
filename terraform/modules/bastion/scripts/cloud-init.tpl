@@ -6,6 +6,29 @@
 package_update: true
 package_upgrade: true
 
+# Create users with SSH keys and sudo access
+# Note: When 'users' section is defined, it replaces default users, so we must include admin user
+users:
+  # Admin user (created by Azure, but we need to preserve it)
+  - name: ${admin_username}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ${admin_ssh_key}
+%{ if length(additional_users) > 0 ~}
+%{ for username, ssh_keys in additional_users ~}
+  - name: ${username}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+%{ for key in ssh_keys ~}
+      - ${key}
+%{ endfor ~}
+%{ endfor ~}
+%{ endif ~}
+
 packages:
   - curl
   - wget

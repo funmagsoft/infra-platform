@@ -84,6 +84,12 @@ variable "install_tools" {
   default     = true
 }
 
+variable "additional_users" {
+  description = "Map of additional users to create on bastion. Key is username, value is list of SSH public keys."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)

@@ -24,7 +24,10 @@ locals {
   ssh_public_key = var.admin_ssh_public_key != null ? var.admin_ssh_public_key : tls_private_key.ssh[0].public_key_openssh
 
   cloud_init_script = var.install_tools ? templatefile("${path.module}/scripts/cloud-init.tpl", {
-    environment = var.environment
+    environment      = var.environment
+    admin_username   = var.admin_username
+    admin_ssh_key    = local.ssh_public_key
+    additional_users = var.additional_users
   }) : null
 }
 

@@ -282,6 +282,7 @@ module "bastion" {
   ubuntu_sku     = var.bastion_ubuntu_sku
 
   allowed_ssh_source_ips       = var.bastion_allowed_ssh_source_ips
+  additional_users             = var.bastion_additional_users
   enable_system_assigned_identity = true
   install_tools                = true
 

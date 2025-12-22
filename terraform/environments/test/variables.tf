@@ -360,3 +360,9 @@ variable "bastion_allowed_ssh_source_ips" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "bastion_additional_users" {
+  description = "Map of additional users to create on bastion. Key is username, value is list of SSH public keys. Users will have sudo access."
+  type        = map(list(string))
+  default     = {}
+}
+

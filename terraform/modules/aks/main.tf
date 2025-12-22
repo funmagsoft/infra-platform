@@ -79,6 +79,7 @@ resource "azurerm_kubernetes_cluster" "this" {
   lifecycle {
     ignore_changes = [
       default_node_pool[0].node_count,
+      default_node_pool[0].upgrade_settings,
       kubernetes_version
     ]
   }
@@ -109,7 +110,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
 
   lifecycle {
     ignore_changes = [
-      node_count
+      node_count,
+      upgrade_settings
     ]
   }
 }
