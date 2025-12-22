@@ -53,7 +53,7 @@ module "key_vault" {
 | sku_name | SKU for Key Vault (standard or premium) | `string` | `"standard"` | no |
 | purge_protection_enabled | Enable purge protection (irreversible) | `bool` | `false` | no |
 | soft_delete_retention_days | Retention days for soft delete (7-90) | `number` | `90` | no |
-| enable_rbac_authorization | Use RBAC for authorization | `bool` | `true` | no |
+| rbac_authorization_enabled | Use RBAC for authorization | `bool` | `true` | no |
 | subnet_id | Subnet ID for Private Endpoint | `string` | - | yes |
 | private_dns_zone_id | Private DNS Zone ID for Key Vault | `string` | - | yes |
 | tags | Tags to apply to all resources | `map(string)` | `{}` | no |
