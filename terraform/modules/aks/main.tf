@@ -25,13 +25,13 @@ resource "azurerm_kubernetes_cluster" "this" {
 
   # System node pool
   default_node_pool {
-    name                = var.system_node_pool_name
-    vm_size             = var.system_node_pool_vm_size
-    node_count          = var.system_node_pool_node_count
-    os_disk_size_gb     = var.system_node_pool_os_disk_size_gb
-    vnet_subnet_id      = var.vnet_subnet_id
-    type                = "VirtualMachineScaleSets"
-    enable_auto_scaling = false
+    name                         = var.system_node_pool_name
+    vm_size                      = var.system_node_pool_vm_size
+    node_count                   = var.system_node_pool_node_count
+    os_disk_size_gb              = var.system_node_pool_os_disk_size_gb
+    vnet_subnet_id               = var.vnet_subnet_id
+    type                         = "VirtualMachineScaleSets"
+    enable_auto_scaling          = false
     only_critical_addons_enabled = true
 
     tags = merge(

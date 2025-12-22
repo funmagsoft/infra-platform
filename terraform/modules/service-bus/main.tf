@@ -10,12 +10,12 @@ terraform {
 
 # Service Bus Namespace
 resource "azurerm_servicebus_namespace" "this" {
-  name                          = "sb-${var.project_name}-${var.environment}"
-  location                      = var.location
-  resource_group_name           = var.resource_group_name
-  sku                           = var.sku
-  capacity                      = var.sku == "Premium" ? var.capacity : null
-  premium_messaging_partitions  = var.sku == "Premium" && var.zone_redundant ? 1 : 0
+  name                         = "sb-${var.project_name}-${var.environment}"
+  location                     = var.location
+  resource_group_name          = var.resource_group_name
+  sku                          = var.sku
+  capacity                     = var.sku == "Premium" ? var.capacity : null
+  premium_messaging_partitions = var.sku == "Premium" && var.zone_redundant ? 1 : 0
   # Premium SKU: use private endpoint only (public_network_access_enabled = false)
   # Non-Premium SKU: use public endpoint only (public_network_access_enabled = true)
   public_network_access_enabled = var.sku == "Premium" ? false : true

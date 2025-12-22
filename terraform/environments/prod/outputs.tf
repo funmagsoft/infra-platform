@@ -215,16 +215,16 @@ output "bastion_ssh_private_key" {
 output "deployment_summary" {
   description = "Summary of deployed platform resources"
   value = {
-    environment            = var.environment
-    aks_cluster           = module.aks.aks_cluster_name
-    aks_oidc_issuer       = module.aks.aks_oidc_issuer_url
-    acr_login_server      = module.acr.acr_login_server
-    postgresql_fqdn       = module.postgresql.postgresql_fqdn
-    key_vault_uri         = module.key_vault.key_vault_uri
-    storage_account       = module.storage.storage_account_name
-    servicebus_namespace  = module.service_bus.servicebus_namespace_name
-    bastion_public_ip     = module.bastion.bastion_public_ip
-    log_analytics         = module.monitoring.log_analytics_workspace_name
+    environment          = var.environment
+    aks_cluster          = module.aks.aks_cluster_name
+    aks_oidc_issuer      = module.aks.aks_oidc_issuer_url
+    acr_login_server     = module.acr.acr_login_server
+    postgresql_fqdn      = module.postgresql.postgresql_fqdn
+    key_vault_uri        = module.key_vault.key_vault_uri
+    storage_account      = module.storage.storage_account_name
+    servicebus_namespace = module.service_bus.servicebus_namespace_name
+    bastion_public_ip    = module.bastion.bastion_public_ip
+    log_analytics        = module.monitoring.log_analytics_workspace_name
   }
 }
 

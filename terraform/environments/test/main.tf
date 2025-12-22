@@ -11,7 +11,7 @@ terraform {
 provider "azurerm" {
   features {
     key_vault {
-      purge_soft_delete_on_destroy = true
+      purge_soft_delete_on_destroy    = true
       recover_soft_deleted_key_vaults = true
     }
     resource_group {
@@ -94,11 +94,11 @@ module "storage" {
   account_replication_type = var.storage_replication_type
   containers               = var.storage_containers
 
-  enable_versioning                      = var.storage_enable_versioning
-  enable_soft_delete_blob                = var.storage_enable_soft_delete_blob
-  blob_soft_delete_retention_days        = var.storage_blob_soft_delete_retention_days
-  enable_soft_delete_container           = var.storage_enable_soft_delete_container
-  container_soft_delete_retention_days   = var.storage_container_soft_delete_retention_days
+  enable_versioning                    = var.storage_enable_versioning
+  enable_soft_delete_blob              = var.storage_enable_soft_delete_blob
+  blob_soft_delete_retention_days      = var.storage_blob_soft_delete_retention_days
+  enable_soft_delete_container         = var.storage_enable_soft_delete_container
+  container_soft_delete_retention_days = var.storage_container_soft_delete_retention_days
 
   # Private Endpoint configuration
   subnet_id = local.data_subnet_id
@@ -144,9 +144,9 @@ module "acr" {
   environment         = var.environment
   project_name        = var.project_name
 
-  sku                  = var.acr_sku
+  sku                     = var.acr_sku
   zone_redundancy_enabled = var.acr_zone_redundancy_enabled
-  retention_days       = var.acr_retention_days
+  retention_days          = var.acr_retention_days
 
   # Private Endpoint configuration
   subnet_id = local.data_subnet_id
@@ -235,17 +235,17 @@ module "aks" {
   dns_service_ip = var.aks_dns_service_ip
 
   # System node pool
-  system_node_pool_vm_size      = var.aks_system_node_pool_vm_size
-  system_node_pool_node_count   = var.aks_system_node_pool_node_count
+  system_node_pool_vm_size         = var.aks_system_node_pool_vm_size
+  system_node_pool_node_count      = var.aks_system_node_pool_node_count
   system_node_pool_os_disk_size_gb = var.aks_system_node_pool_os_disk_size_gb
 
   # User node pool
-  user_node_pool_enabled       = var.aks_user_node_pool_enabled
-  user_node_pool_vm_size       = var.aks_user_node_pool_vm_size
-  user_node_pool_min_count     = var.aks_user_node_pool_min_count
-  user_node_pool_max_count     = var.aks_user_node_pool_max_count
+  user_node_pool_enabled         = var.aks_user_node_pool_enabled
+  user_node_pool_vm_size         = var.aks_user_node_pool_vm_size
+  user_node_pool_min_count       = var.aks_user_node_pool_min_count
+  user_node_pool_max_count       = var.aks_user_node_pool_max_count
   user_node_pool_os_disk_size_gb = var.aks_user_node_pool_os_disk_size_gb
-  enable_auto_scaling          = var.aks_enable_auto_scaling
+  enable_auto_scaling            = var.aks_enable_auto_scaling
 
   # Features
   oidc_issuer_enabled       = var.aks_oidc_issuer_enabled
@@ -281,10 +281,10 @@ module "bastion" {
   admin_username = var.bastion_admin_username
   ubuntu_sku     = var.bastion_ubuntu_sku
 
-  allowed_ssh_source_ips       = var.bastion_allowed_ssh_source_ips
-  additional_users             = var.bastion_additional_users
+  allowed_ssh_source_ips          = var.bastion_allowed_ssh_source_ips
+  additional_users                = var.bastion_additional_users
   enable_system_assigned_identity = true
-  install_tools                = true
+  install_tools                   = true
 
   tags = local.common_tags
 }

@@ -17,7 +17,7 @@ locals {
     0,
     4
   )
-  
+
   # Format: st{org}{project}{env}{hash}
   # Example: sthycomecaredev1a2b (20 characters)
   storage_account_name = "st${lower(var.organization_name)}${lower(var.project_name)}${lower(var.environment)}${local.name_hash}"
@@ -25,17 +25,17 @@ locals {
 
 # Storage Account
 resource "azurerm_storage_account" "this" {
-  name                     = local.storage_account_name
-  resource_group_name      = var.resource_group_name
-  location                 = var.location
-  account_tier             = var.account_tier
-  account_replication_type = var.account_replication_type
-  min_tls_version          = var.min_tls_version
+  name                       = local.storage_account_name
+  resource_group_name        = var.resource_group_name
+  location                   = var.location
+  account_tier               = var.account_tier
+  account_replication_type   = var.account_replication_type
+  min_tls_version            = var.min_tls_version
   https_traffic_only_enabled = var.enable_https_traffic_only
 
   # Network rules - allow during deployment (can be restricted later via network_rules)
   public_network_access_enabled = true
-  
+
   # Network rules commented out during initial deployment to allow Terraform access
   # Can be enabled after deployment via separate configuration
   # network_rules {
