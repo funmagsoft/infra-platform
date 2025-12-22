@@ -69,6 +69,41 @@ resource "azurerm_postgresql_flexible_server" "this" {
 #   value     = "100"
 # }
 
+# Private DNS Zone for PostgreSQL
+resource "azurerm_private_dns_zone" "this" {
+  name                = "privatelink.postgres.database.azure.com"
+  resource_group_name = var.resource_group_name
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "postgresql"
+    }
+  )
+}
+
+# Link Private DNS Zone to VNet
+resource "azurerm_private_dns_zone_virtual_network_link" "this" {
+  count = var.vnet_id != null && var.vnet_name != null ? 1 : 0
+
+  name                  = "${var.vnet_name}-postgresql-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.this.name
+  virtual_network_id    = var.vnet_id
+  registration_enabled  = false
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "postgresql"
+    }
+  )
+}
+
 # Private Endpoint for PostgreSQL
 resource "azurerm_private_endpoint" "this" {
   name                = "${azurerm_postgresql_flexible_server.this.name}-pe"
@@ -85,7 +120,7 @@ resource "azurerm_private_endpoint" "this" {
 
   private_dns_zone_group {
     name                 = "postgresql-dns-zone-group"
-    private_dns_zone_ids = [var.private_dns_zone_id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.this.id]
   }
 
   tags = merge(

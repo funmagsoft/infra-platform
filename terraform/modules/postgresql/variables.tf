@@ -85,9 +85,16 @@ variable "private_endpoint_subnet_id" {
   type        = string
 }
 
-variable "private_dns_zone_id" {
-  description = "Private DNS Zone ID for PostgreSQL"
+variable "vnet_id" {
+  description = "Virtual Network ID for Private DNS Zone link"
   type        = string
+  default     = null
+}
+
+variable "vnet_name" {
+  description = "Virtual Network name for Private DNS Zone link"
+  type        = string
+  default     = null
 }
 
 variable "tags" {

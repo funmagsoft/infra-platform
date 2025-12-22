@@ -38,7 +38,7 @@ variable "zone_redundant" {
 }
 
 variable "public_network_access_enabled" {
-  description = "Enable public network access"
+  description = "[DEPRECATED] This variable is ignored. Public network access is automatically set based on SKU: Premium = false (private endpoint only), non-Premium = true (public endpoint only)"
   type        = bool
   default     = false
 }
@@ -55,9 +55,16 @@ variable "subnet_id" {
   type        = string
 }
 
-variable "private_dns_zone_id" {
-  description = "Private DNS Zone ID for Service Bus"
+variable "vnet_id" {
+  description = "Virtual Network ID for Private DNS Zone link (required for Premium SKU)"
   type        = string
+  default     = null
+}
+
+variable "vnet_name" {
+  description = "Virtual Network name for Private DNS Zone link (required for Premium SKU)"
+  type        = string
+  default     = null
 }
 
 variable "tags" {

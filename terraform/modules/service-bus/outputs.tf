@@ -35,3 +35,8 @@ output "private_endpoint_ip" {
   value       = try(azurerm_private_endpoint.this[0].private_service_connection[0].private_ip_address, null)
 }
 
+output "private_dns_zone_id" {
+  description = "ID of the Private DNS Zone for Service Bus (Premium SKU only, null for non-Premium)"
+  value       = var.sku == "Premium" ? azurerm_private_dns_zone.this[0].id : null
+}
+

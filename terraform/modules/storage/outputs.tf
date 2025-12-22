@@ -55,3 +55,13 @@ output "file_private_endpoint_ip" {
   value       = azurerm_private_endpoint.file.private_service_connection[0].private_ip_address
 }
 
+output "blob_private_dns_zone_id" {
+  description = "ID of the Private DNS Zone for Blob Storage"
+  value       = azurerm_private_dns_zone.blob.id
+}
+
+output "file_private_dns_zone_id" {
+  description = "ID of the Private DNS Zone for File Storage"
+  value       = azurerm_private_dns_zone.file.id
+}
+

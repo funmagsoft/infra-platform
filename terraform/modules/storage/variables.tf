@@ -85,12 +85,16 @@ variable "subnet_id" {
   type        = string
 }
 
-variable "private_dns_zone_ids" {
-  description = "Map of Private DNS Zone IDs for blob and file endpoints"
-  type = object({
-    blob = string
-    file = string
-  })
+variable "vnet_id" {
+  description = "Virtual Network ID for Private DNS Zone links"
+  type        = string
+  default     = null
+}
+
+variable "vnet_name" {
+  description = "Virtual Network name for Private DNS Zone links"
+  type        = string
+  default     = null
 }
 
 variable "tags" {

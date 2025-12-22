@@ -52,11 +52,10 @@ locals {
   }
 
   # Extract foundation outputs
-  vnet_id           = data.terraform_remote_state.foundation.outputs.vnet_id
-  aks_subnet_id     = data.terraform_remote_state.foundation.outputs.aks_subnet_id
-  data_subnet_id    = data.terraform_remote_state.foundation.outputs.data_subnet_id
-  mgmt_subnet_id    = data.terraform_remote_state.foundation.outputs.mgmt_subnet_id
-  private_dns_zones = data.terraform_remote_state.foundation.outputs.private_dns_zones
+  vnet_id        = data.terraform_remote_state.foundation.outputs.vnet_id
+  aks_subnet_id  = data.terraform_remote_state.foundation.outputs.aks_subnet_id
+  data_subnet_id = data.terraform_remote_state.foundation.outputs.data_subnet_id
+  mgmt_subnet_id = data.terraform_remote_state.foundation.outputs.mgmt_subnet_id
 }
 
 #------------------------------------------------------------------------------
@@ -102,10 +101,8 @@ module "storage" {
 
   # Private Endpoint configuration
   subnet_id = local.data_subnet_id
-  private_dns_zone_ids = {
-    blob = local.private_dns_zones.blob
-    file = local.private_dns_zones.file
-  }
+  vnet_id   = local.vnet_id
+  vnet_name = data.terraform_remote_state.foundation.outputs.vnet_name
 
   tags = local.common_tags
 }
@@ -127,8 +124,9 @@ module "key_vault" {
   soft_delete_retention_days = var.key_vault_soft_delete_retention_days
 
   # Private Endpoint configuration
-  subnet_id           = local.data_subnet_id
-  private_dns_zone_id = local.private_dns_zones.keyvault
+  subnet_id = local.data_subnet_id
+  vnet_id   = local.vnet_id
+  vnet_name = data.terraform_remote_state.foundation.outputs.vnet_name
 
   tags = local.common_tags
 }
@@ -150,8 +148,9 @@ module "acr" {
   retention_days       = var.acr_retention_days
 
   # Private Endpoint configuration
-  subnet_id           = local.data_subnet_id
-  private_dns_zone_id = local.private_dns_zones.acr
+  subnet_id = local.data_subnet_id
+  vnet_id   = local.vnet_id
+  vnet_name = data.terraform_remote_state.foundation.outputs.vnet_name
 
   tags = local.common_tags
 }
@@ -182,7 +181,8 @@ module "postgresql" {
 
   # Private Endpoint configuration
   private_endpoint_subnet_id = local.data_subnet_id
-  private_dns_zone_id        = local.private_dns_zones.postgresql
+  vnet_id                    = local.vnet_id
+  vnet_name                  = data.terraform_remote_state.foundation.outputs.vnet_name
 
   tags = local.common_tags
 }
@@ -204,8 +204,9 @@ module "service_bus" {
   zone_redundant = var.service_bus_zone_redundant
 
   # Private Endpoint configuration
-  subnet_id           = local.data_subnet_id
-  private_dns_zone_id = local.private_dns_zones.servicebus
+  subnet_id = local.data_subnet_id
+  vnet_id   = local.vnet_id
+  vnet_name = data.terraform_remote_state.foundation.outputs.vnet_name
 
   tags = local.common_tags
 }

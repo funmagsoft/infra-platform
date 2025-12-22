@@ -65,6 +65,75 @@ resource "azurerm_storage_container" "containers" {
   container_access_type = "private"
 }
 
+# Private DNS Zone for Blob Storage
+resource "azurerm_private_dns_zone" "blob" {
+  name                = "privatelink.blob.core.windows.net"
+  resource_group_name = var.resource_group_name
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "storage"
+    }
+  )
+}
+
+# Private DNS Zone for File Storage
+resource "azurerm_private_dns_zone" "file" {
+  name                = "privatelink.file.core.windows.net"
+  resource_group_name = var.resource_group_name
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "storage"
+    }
+  )
+}
+
+# Link Private DNS Zones to VNet
+resource "azurerm_private_dns_zone_virtual_network_link" "blob" {
+  count = var.vnet_id != null && var.vnet_name != null ? 1 : 0
+
+  name                  = "${var.vnet_name}-blob-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.blob.name
+  virtual_network_id    = var.vnet_id
+  registration_enabled  = false
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "storage"
+    }
+  )
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "file" {
+  count = var.vnet_id != null && var.vnet_name != null ? 1 : 0
+
+  name                  = "${var.vnet_name}-file-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.file.name
+  virtual_network_id    = var.vnet_id
+  registration_enabled  = false
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "storage"
+    }
+  )
+}
+
 # Private Endpoint for Blob
 resource "azurerm_private_endpoint" "blob" {
   name                = "${azurerm_storage_account.this.name}-blob-pe"
@@ -81,7 +150,7 @@ resource "azurerm_private_endpoint" "blob" {
 
   private_dns_zone_group {
     name                 = "blob-dns-zone-group"
-    private_dns_zone_ids = [var.private_dns_zone_ids.blob]
+    private_dns_zone_ids = [azurerm_private_dns_zone.blob.id]
   }
 
   tags = merge(
@@ -110,7 +179,7 @@ resource "azurerm_private_endpoint" "file" {
 
   private_dns_zone_group {
     name                 = "file-dns-zone-group"
-    private_dns_zone_ids = [var.private_dns_zone_ids.file]
+    private_dns_zone_ids = [azurerm_private_dns_zone.file.id]
   }
 
   tags = merge(

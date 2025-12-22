@@ -50,6 +50,41 @@ resource "azurerm_container_registry" "this" {
   )
 }
 
+# Private DNS Zone for ACR
+resource "azurerm_private_dns_zone" "this" {
+  name                = "privatelink.azurecr.io"
+  resource_group_name = var.resource_group_name
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "acr"
+    }
+  )
+}
+
+# Link Private DNS Zone to VNet
+resource "azurerm_private_dns_zone_virtual_network_link" "this" {
+  count = var.vnet_id != null && var.vnet_name != null ? 1 : 0
+
+  name                  = "${var.vnet_name}-acr-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.this.name
+  virtual_network_id    = var.vnet_id
+  registration_enabled  = false
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      Module      = "acr"
+    }
+  )
+}
+
 # Private Endpoint for ACR
 resource "azurerm_private_endpoint" "this" {
   name                = "${azurerm_container_registry.this.name}-pe"
@@ -66,7 +101,7 @@ resource "azurerm_private_endpoint" "this" {
 
   private_dns_zone_group {
     name                 = "registry-dns-zone-group"
-    private_dns_zone_ids = [var.private_dns_zone_id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.this.id]
   }
 
   tags = merge(

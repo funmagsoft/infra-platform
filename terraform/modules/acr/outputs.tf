@@ -35,3 +35,8 @@ output "private_endpoint_ip" {
   value       = azurerm_private_endpoint.this.private_service_connection[0].private_ip_address
 }
 
+output "private_dns_zone_id" {
+  description = "ID of the Private DNS Zone for ACR"
+  value       = azurerm_private_dns_zone.this.id
+}
+
