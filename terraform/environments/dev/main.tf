@@ -263,6 +263,33 @@ module "aks" {
   ]
 }
 
+locals {
+  aks_kube_config = yamldecode(module.aks.aks_kube_config)
+}
+
+provider "kubernetes" {
+  host                   = local.aks_kube_config["clusters"][0]["cluster"]["server"]
+  client_certificate     = base64decode(local.aks_kube_config["users"][0]["user"]["client-certificate-data"])
+  client_key             = base64decode(local.aks_kube_config["users"][0]["user"]["client-key-data"])
+  cluster_ca_certificate = base64decode(local.aks_kube_config["clusters"][0]["cluster"]["certificate-authority-data"])
+}
+
+module "aks_namespace" {
+  source = "../../modules/aks-namespace"
+
+  namespace    = "ecare"
+  environment  = var.environment
+  project_name = var.project_name
+  labels = {
+    "app.kubernetes.io/name"       = "ecare"
+    "app.kubernetes.io/env"        = var.environment
+    "app.kubernetes.io/part-of"    = var.project_name
+    "app.kubernetes.io/managed-by" = "terraform"
+  }
+
+  depends_on = [module.aks]
+}
+
 #------------------------------------------------------------------------------
 # Module 8: Bastion VM (with tools)
 #------------------------------------------------------------------------------
