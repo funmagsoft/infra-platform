@@ -168,6 +168,11 @@ output "aks_oidc_issuer_url" {
   value       = module.aks.aks_oidc_issuer_url
 }
 
+output "aks_namespace_name" {
+  description = "Name of the shared AKS namespace for workloads"
+  value       = module.aks_namespace.namespace_name
+}
+
 output "aks_node_resource_group" {
   description = "Resource group containing AKS node resources"
   value       = module.aks.aks_node_resource_group
