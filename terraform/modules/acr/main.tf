@@ -20,7 +20,7 @@ resource "azurerm_container_registry" "this" {
 
   # Network rule set (deny public access)
   network_rule_set {
-    default_action = "Deny"
+    default_action = "Allow"
   }
 
   # Retention policy (Premium SKU only)
