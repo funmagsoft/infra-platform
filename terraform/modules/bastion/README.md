@@ -1,28 +1,35 @@
 # Bastion VM Module
 
-Terraform module for deploying a Bastion (Jump Host) VM with pre-installed management tools for
-accessing private Azure resources.
+Terraform module for deploying a Bastion (jump host) VM with pre-installed management tools for accessing private Azure resources.
 
-## Resources Created
+## Resources
+- Linux VM (Ubuntu 22.04 LTS)
+- Static Public IP (Standard)
+- Network Interface in the management subnet
+- Network Security Group with SSH allow rule
+- SSH key (generated or provided)
 
-- **Linux VM** - Ubuntu 22.04 LTS
-- **Public IP** - Static Standard SKU
-- **Network Interface** - Connected to management subnet
-- **Network Security Group** - SSH access rules
-- **SSH Key Pair** - Auto-generated or provided
+## Key Inputs
+- `resource_group_name`, `location`
+- `environment`, `project_name`
+- `subnet_id` (mgmt subnet)
+- `vm_size` (default: `Standard_D2als_v6`)
+- `admin_username` (default: `azureuser`)
+- `admin_ssh_public_key` (optional; otherwise generated)
+- `allowed_ssh_source_ips` (list, default `["0.0.0.0/0"]`; restrict in prod)
+- `install_tools` (default: `true`)
+- `enable_system_assigned_identity` (default: `true`)
+
+## Key Outputs
+- `bastion_vm_id`, `bastion_public_ip`, `bastion_private_ip`
+- `bastion_ssh_private_key` (sensitive, when generated)
+- `bastion_principal_id` (managed identity)
 
 ## Features
-
-- **Auto-provisioned tools** via cloud-init:
-  - Azure CLI
-  - kubectl with bash completion
-  - Helm with bash completion
-  - PostgreSQL client (psql)
-  - jq, git, curl, wget
-- **System-assigned managed identity** for Azure access
-- **Pre-configured aliases** and shell functions
-- **Custom MOTD** with usage instructions
-- **NSG rules** for SSH, AKS API, PostgreSQL access
+- Installs tools via cloud-init: Azure CLI, kubectl (+completion), Helm (+completion), psql, jq, git, curl, wget.
+- Preconfigured aliases and helper functions.
+- Custom MOTD with quick instructions.
+- NSG rules for SSH, outbound AKS API, and PostgreSQL.
 
 ## Usage
 
