@@ -64,7 +64,7 @@ variable "purge_protection_enabled" {
 variable "public_network_access_enabled" {
   description = "Enable public network access"
   type        = bool
-  default     = false
+  default     = true
 }
 
 # Private Endpoint configuration
