@@ -27,8 +27,8 @@ storage_container_soft_delete_retention_days = 7
 #------------------------------------------------------------------------------
 # Key Vault Configuration
 #------------------------------------------------------------------------------
-key_vault_sku                       = "standard"
-key_vault_purge_protection_enabled  = false
+key_vault_sku                        = "standard"
+key_vault_purge_protection_enabled   = false
 key_vault_soft_delete_retention_days = 7
 
 #------------------------------------------------------------------------------
@@ -103,10 +103,10 @@ bastion_allowed_ssh_source_ips = ["0.0.0.0/0"]  # Change to specific IPs in prod
 # Each user can have multiple SSH public keys
 bastion_additional_users = {
   marek = [
-    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC... marek@example.com"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCm5fSkl6kPRVhs87rdCU+D6hHjgT+WMbdYSa5u+SA8/8K+3mhEGpjAjEnp3UJjqCmyk2lgb8ShdU/HxvjdFTvwZ1VHJk0pBX9VLVblb81mFYgrNG1nKoQkXTHKBgD+hJPoqXcoHoqMShUlPTEtoScrb4zHAMJv/t23AINtkcHuVkuuiOoJqZzHHauXKYCRms6sHzvPYHUpAjShDQiZbcdHPNl5txIIkXNKEU/MtFlqEgO4aXTPhfSBGEGw59cwm137j3r8sNdFIECCx0T1tmQ6fpsMQTbDijftz8M5+YxyC5Zu7V9bacr+GzJbDgh3L257oNpPrGowhjBP8Qe2vTiTNZUROlqGWIoWXWjtykaFni5j60tPxxyUZl9mU5qOFNDr0MeHzwF7iex4EkSiCOAfbRw/Kj/b5xFuYdwRBVDJ8J6aM6zSM5UTK68XPn8qIUPTgkIbnTeslEwnfbwmk7Ct8AuP9K1kgALP/Lp0JaNbSgx9XJI2LkdYxD/RH5wWq1hXfb4tLhvKq/2oZjMXyZ79Mmf+sWu5V3OQhgsK0PkhXBZ7zkWu2INx6OQhDG8eQYKB/fsncMRsUwpYLErwlFitK1JYxj75ExACywfLimdm+H5wNUoy9D0u3GCLfZ5aAIxHZzqDGN3ILI1u13CDxNgqXl/D9MdPJwprHlm99UICGQ== marek.gmyrek@hycom.digital"
   ]
   darek = [
-    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC... darek@example.com"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCm5fSkl6kPRVhs87rdCU+D6hHjgT+WMbdYSa5u+SA8/8K+3mhEGpjAjEnp3UJjqCmyk2lgb8ShdU/HxvjdFTvwZ1VHJk0pBX9VLVblb81mFYgrNG1nKoQkXTHKBgD+hJPoqXcoHoqMShUlPTEtoScrb4zHAMJv/t23AINtkcHuVkuuiOoJqZzHHauXKYCRms6sHzvPYHUpAjShDQiZbcdHPNl5txIIkXNKEU/MtFlqEgO4aXTPhfSBGEGw59cwm137j3r8sNdFIECCx0T1tmQ6fpsMQTbDijftz8M5+YxyC5Zu7V9bacr+GzJbDgh3L257oNpPrGowhjBP8Qe2vTiTNZUROlqGWIoWXWjtykaFni5j60tPxxyUZl9mU5qOFNDr0MeHzwF7iex4EkSiCOAfbRw/Kj/b5xFuYdwRBVDJ8J6aM6zSM5UTK68XPn8qIUPTgkIbnTeslEwnfbwmk7Ct8AuP9K1kgALP/Lp0JaNbSgx9XJI2LkdYxD/RH5wWq1hXfb4tLhvKq/2oZjMXyZ79Mmf+sWu5V3OQhgsK0PkhXBZ7zkWu2INx6OQhDG8eQYKB/fsncMRsUwpYLErwlFitK1JYxj75ExACywfLimdm+H5wNUoy9D0u3GCLfZ5aAIxHZzqDGN3ILI1u13CDxNgqXl/D9MdPJwprHlm99UICGQ== marek.gmyrek@hycom.digital"
   ]
 }
 
