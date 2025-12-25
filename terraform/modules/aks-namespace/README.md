@@ -43,11 +43,60 @@ module "aks_namespace" {
 |------|-------------|-----------|
 | namespace_name | Name of the created namespace | no |
 
+## Module-Specific Configuration
+
+No module-specific configuration required.
+
 ## Naming Convention
 
 Resources follow this naming pattern:
 
 - **Namespace**: User-defined (default: `ecare`)
+
+## Security Features
+
+- **Namespace Isolation**: Kubernetes namespace provides logical isolation
+- **Label-based Organization**: Environment and project labels for resource organization
+- **RBAC Ready**: Namespace can be used with Kubernetes RBAC for access control
+
+## Examples
+
+### Development Environment
+
+```hcl
+module "aks_namespace" {
+  source = "../../modules/aks-namespace"
+
+  environment  = "dev"
+  project_name = "ecare"
+  namespace    = "ecare"
+
+  labels = {
+    team = "platform"
+  }
+}
+```
+
+### Production Environment
+
+```hcl
+module "aks_namespace" {
+  source = "../../modules/aks-namespace"
+
+  environment  = "prod"
+  project_name = "ecare"
+  namespace    = "ecare"
+
+  labels = {
+    team      = "platform"
+    critical  = "true"
+  }
+}
+```
+
+## Integration with Other Modules
+
+No specific integration with other modules.
 
 ## Prerequisites
 

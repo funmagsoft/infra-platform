@@ -132,7 +132,25 @@ module "aks" {
 | aks_principal_id | Principal ID of the AKS system-assigned identity | no |
 | user_node_pool_id | ID of the user node pool | no |
 
-## OIDC Issuer URL (Phase 3)
+## Module-Specific Configuration
+
+### Node Pools
+
+#### System Node Pool
+
+- Runs critical system pods (CoreDNS, metrics-server, etc.)
+- `only_critical_addons_enabled = true`
+- Fixed node count (no auto-scaling)
+- Recommended: 3 nodes for HA
+
+#### User Node Pool
+
+- Runs application workloads
+- Auto-scaling enabled (min/max configurable)
+- Can be scaled to zero (min_count = 0)
+- Multiple user pools supported
+
+### OIDC Issuer URL (Phase 3)
 
 **CRITICAL**: The `aks_oidc_issuer_url` output is required for Phase 3 (Workload Identity):
 
@@ -144,7 +162,7 @@ terraform output -raw aks_oidc_issuer_url
 
 This URL is used to create Federated Identity Credentials for service principals.
 
-## Network Configuration
+### Network Configuration
 
 ### Azure CNI
 
@@ -158,7 +176,7 @@ This URL is used to create Federated Identity Credentials for service principals
 - Default: `10.2.0.0/16`
 - Used for Kubernetes services (ClusterIP)
 
-## Getting Credentials
+### Getting Credentials
 
 ```bash
 # User credentials
@@ -176,7 +194,7 @@ az aks get-credentials \
 kubectl get nodes
 ```
 
-## Azure Policy Add-on
+### Azure Policy Add-on
 
 When enabled, enforces policies like:
 
@@ -185,7 +203,7 @@ When enabled, enforces policies like:
 - Resource limits
 - Image sources (e.g., only from your ACR)
 
-## Container Insights
+### Container Insights
 
 Integrates with Log Analytics for:
 
@@ -203,7 +221,7 @@ ContainerLog
 | order by TimeGenerated desc
 ```
 
-## ACR Integration
+### ACR Integration
 
 The module automatically grants AKS kubelet identity the `AcrPull` role on the specified ACR:
 
@@ -224,7 +242,7 @@ spec:
     image: acrecaredev.azurecr.io/my-app:latest
 ```
 
-## Workload Identity (Phase 3)
+### Workload Identity (Phase 3)
 
 This module prepares AKS for Workload Identity by enabling:
 
@@ -238,7 +256,7 @@ In Phase 3, you'll:
 3. Deploy pods with service account annotations
 4. Pods authenticate to Azure services without secrets!
 
-## Scaling
+### Scaling
 
 ### Manual Scaling
 
@@ -259,7 +277,7 @@ Auto-scaling is enabled by default for user node pool based on:
 - Memory utilization
 - Pod scheduling failures
 
-## Upgrading Kubernetes
+### Upgrading Kubernetes
 
 ```bash
 # List available versions
@@ -281,11 +299,125 @@ Resources follow this naming pattern:
 - **AKS Cluster**: `aks-{project_name}-{environment}` (e.g., `aks-ecare-dev`)
 - **Node Resource Group**: `MC_{rg_name}_{aks_name}_{location}`
 
+## Security Features
+
+- **Workload Identity**: Modern identity management without secrets
+- **OIDC Issuer**: Enables federated identity credentials for pods
+- **Azure Policy**: Enforces security policies (no privileged containers, resource limits)
+- **Network Isolation**: Azure CNI with network policies for pod-to-pod communication control
+- **RBAC Integration**: Kubernetes RBAC with Azure AD integration
+- **Container Insights**: Security monitoring and logging
+
+## Examples
+
+### Development Environment
+
+```hcl
+module "aks" {
+  source = "../../modules/aks"
+
+  resource_group_name = "rg-ecare-dev"
+  location            = "West Europe"
+  environment         = "dev"
+  
+  kubernetes_version = null  # Use latest stable
+  sku_tier           = "Standard"
+
+  vnet_subnet_id = var.aks_subnet_id
+  network_plugin = "azure"
+  network_policy = "azure"
+  service_cidr   = "10.2.0.0/16"
+  dns_service_ip = "10.2.0.10"
+
+  system_node_pool_vm_size    = "Standard_D2s_v3"
+  system_node_pool_node_count = 3
+
+  user_node_pool_enabled   = true
+  user_node_pool_vm_size   = "Standard_B2s"  # Burstable for dev
+  user_node_pool_min_count = 1
+  user_node_pool_max_count = 3
+  enable_auto_scaling      = true
+
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
+  azure_policy_enabled      = true
+
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
+  enable_container_insights  = true
+}
+```
+
+### Production Environment
+
+```hcl
+module "aks" {
+  source = "../../modules/aks"
+
+  resource_group_name = "rg-ecare-prod"
+  location            = "West Europe"
+  environment         = "prod"
+  
+  kubernetes_version = "1.28.5"  # Pinned version for prod
+  sku_tier           = "Standard"
+
+  vnet_subnet_id = var.aks_subnet_id
+  network_plugin = "azure"
+  network_policy = "azure"
+  service_cidr   = "10.2.0.0/16"
+  dns_service_ip = "10.2.0.10"
+
+  system_node_pool_vm_size    = "Standard_D2s_v3"
+  system_node_pool_node_count = 3
+
+  user_node_pool_enabled   = true
+  user_node_pool_vm_size   = "Standard_D2s_v3"  # Production-grade VMs
+  user_node_pool_min_count = 3
+  user_node_pool_max_count = 10
+  enable_auto_scaling      = true
+
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
+  azure_policy_enabled      = true
+
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
+  enable_container_insights  = true
+}
+```
+
 ## Cost Optimization
 
 - Use Burstable VMs (B-series) for dev: `Standard_B2s`
 - Use auto-scaling with low min_count
 - Use spot instances for non-critical workloads (not in this module)
+
+## Integration with Other Modules
+
+### ACR Module
+
+The AKS module integrates with ACR by automatically granting the kubelet identity the `AcrPull` role:
+
+```hcl
+module "aks" {
+  source = "../../modules/aks"
+  
+  acr_id = module.acr.acr_id
+  # ... other variables
+}
+```
+
+### Monitoring Module
+
+The AKS module integrates with the Monitoring module for Container Insights:
+
+```hcl
+module "aks" {
+  source = "../../modules/aks"
+  
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
+  enable_container_insights  = true
+  # ... other variables
+}
+```
 
 ## Prerequisites
 

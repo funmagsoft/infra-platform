@@ -92,6 +92,17 @@ module "storage" {
 | blob_private_dns_zone_id | ID of the Private DNS Zone for Blob Storage | no |
 | file_private_dns_zone_id | ID of the Private DNS Zone for File Storage | no |
 
+## Module-Specific Configuration
+
+### Replication Types
+
+| Type | Description | Use Case |
+|------|-------------|----------|
+| LRS | Locally Redundant Storage | Dev/Test (3 copies in single datacenter) |
+| ZRS | Zone Redundant Storage | Production (3 copies across availability zones) |
+| GRS | Geo-Redundant Storage | Production (6 copies, 2 regions) |
+| RAGRS | Read-Access GRS | Production with read access to secondary region |
+
 ## Naming Convention
 
 Resources follow this naming pattern:
@@ -120,15 +131,6 @@ Resources follow this naming pattern:
 - **Soft Delete (Blobs)**: Recoverable for configured retention period
 - **Soft Delete (Containers)**: Prevents accidental container deletion
 - **TLS 1.2+**: Enforced minimum encryption level
-
-## Replication Types
-
-| Type | Description | Use Case |
-|------|-------------|----------|
-| LRS | Locally Redundant Storage | Dev/Test (3 copies in single datacenter) |
-| ZRS | Zone Redundant Storage | Production (3 copies across availability zones) |
-| GRS | Geo-Redundant Storage | Production (6 copies, 2 regions) |
-| RAGRS | Read-Access GRS | Production with read access to secondary region |
 
 ## Examples
 
@@ -190,6 +192,10 @@ az role assignment create \
 # Store connection string in Key Vault
 export STORAGE_CONNECTION_STRING=$(terraform output -raw storage_account_primary_connection_string)
 ```
+
+## Integration with Other Modules
+
+No specific integration with other modules.
 
 ## Prerequisites
 

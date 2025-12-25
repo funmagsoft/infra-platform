@@ -65,9 +65,9 @@ module "monitoring" {
 | application_insights_connection_string | Connection String for Application Insights | yes |
 | application_insights_app_id | Application ID of the Application Insights instance | no |
 
-## Integration with Other Modules
+## Module-Specific Configuration
 
-### AKS Module
+### Integration with AKS Module
 
 Log Analytics Workspace is used by AKS for Container Insights:
 
@@ -97,6 +97,13 @@ Resources follow this naming pattern:
 
 - Log Analytics Workspace: `log-{project_name}-{environment}`
 - Application Insights: `appi-{project_name}-{environment}`
+
+## Security Features
+
+- **Centralized Logging**: All logs stored in Log Analytics Workspace
+- **Data Retention**: Configurable retention period (30-730 days)
+- **Cost Optimization**: Pay-As-You-Go pricing (PerGB2018 SKU)
+- **Application Insights**: Integrated with Log Analytics Workspace
 
 ## Examples
 
@@ -128,12 +135,15 @@ module "monitoring" {
 }
 ```
 
-## Security Features
+## Integration with Other Modules
 
-- **Centralized Logging**: All logs stored in Log Analytics Workspace
-- **Data Retention**: Configurable retention period (30-730 days)
-- **Cost Optimization**: Pay-As-You-Go pricing (PerGB2018 SKU)
-- **Application Insights**: Integrated with Log Analytics Workspace
+No specific integration with other modules.
+
+## Prerequisites
+
+From Phase 1 (infra-foundation):
+
+- No specific prerequisites required (monitoring is typically deployed early in the infrastructure setup)
 
 ## Terraform Version
 

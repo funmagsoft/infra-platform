@@ -174,6 +174,10 @@ az role assignment create \
 export SERVICE_BUS_CONNECTION_STRING=$(terraform output -raw servicebus_primary_connection_string)
 ```
 
+## Integration with Other Modules
+
+No specific integration with other modules.
+
 ## Prerequisites
 
 From Phase 1 (infra-foundation):

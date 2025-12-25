@@ -50,14 +50,6 @@ module "postgresql" {
 }
 ```
 
-## SKU Tiers
-
-| Tier | SKU Example | Use Case | vCores | Memory |
-|------|-------------|----------|---------|---------|
-| Burstable | `B_Standard_B1ms` | Dev/Test | 1 | 2 GiB |
-| General Purpose | `GP_Standard_D2s_v3` | Production | 2 | 8 GiB |
-| Memory Optimized | `MO_Standard_E4s_v3` | High-performance | 4 | 32 GiB |
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -94,7 +86,17 @@ module "postgresql" {
 | private_endpoint_ip | Private IP address of the Private Endpoint | no |
 | private_dns_zone_id | ID of the Private DNS Zone for PostgreSQL | no |
 
-## High Availability
+## Module-Specific Configuration
+
+### SKU Tiers
+
+| Tier | SKU Example | Use Case | vCores | Memory |
+|------|-------------|----------|---------|---------|
+| Burstable | `B_Standard_B1ms` | Dev/Test | 1 | 2 GiB |
+| General Purpose | `GP_Standard_D2s_v3` | Production | 2 | 8 GiB |
+| Memory Optimized | `MO_Standard_E4s_v3` | High-performance | 4 | 32 GiB |
+
+### High Availability
 
 ```hcl
 # Production: Enable HA with zone redundancy
@@ -107,9 +109,9 @@ high_availability_mode    = "ZoneRedundant"
 # - Automatic failover (< 2 min downtime)
 ```
 
-## Connection Examples
+### Connection Examples
 
-### From Bastion VM
+#### From Bastion VM
 
 ```bash
 psql -h psql-ecare-dev.postgres.database.azure.net \
@@ -117,25 +119,82 @@ psql -h psql-ecare-dev.postgres.database.azure.net \
      -d postgres
 ```
 
-### From Application (Connection String)
+#### From Application (Connection String)
 
-```
+```text
 postgresql://psqladmin:PASSWORD@psql-ecare-dev.postgres.database.azure.net:5432/mydb?sslmode=require
 ```
 
-### Using Environment Variable
+#### Using Environment Variable
 
 ```bash
 export DATABASE_URL="postgresql://psqladmin:${DB_PASSWORD}@psql-ecare-dev.postgres.database.azure.net:5432/postgres"
 ```
 
-## Security
+## Security Features
 
-- `require_secure_transport=off` for private network (configured automatically)
-- Password authentication (Managed Identity support coming in future)
-- Network isolation via VNet integration
-- Encryption at rest (automatic)
-- TLS 1.2+ for connections
+- **Network Isolation**: Public network access disabled by default, VNet integration via delegated subnet
+- **Encryption at Rest**: Automatic encryption for all data
+- **TLS 1.2+**: Enforced minimum encryption level for connections
+- **Password Authentication**: Secure password-based authentication (Managed Identity support coming in future)
+- **Private Endpoints**: Optional Private Endpoint support for additional network isolation
+
+## Examples
+
+### Development Environment
+
+```hcl
+module "postgresql" {
+  source = "../../modules/postgresql"
+
+  resource_group_name = "rg-ecare-dev"
+  location            = "West Europe"
+  environment         = "dev"
+  
+  postgresql_version = "15"
+  sku_name           = "B_Standard_B1ms"  # Burstable for dev
+  storage_mb         = 32768
+  
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+  high_availability_enabled    = false
+  
+  administrator_login    = "psqladmin"
+  administrator_password = var.db_password
+  
+  private_endpoint_subnet_id = var.data_subnet_id
+  vnet_id                    = var.vnet_id
+  vnet_name                  = var.vnet_name
+}
+```
+
+### Production Environment
+
+```hcl
+module "postgresql" {
+  source = "../../modules/postgresql"
+
+  resource_group_name = "rg-ecare-prod"
+  location            = "West Europe"
+  environment         = "prod"
+  
+  postgresql_version = "15"
+  sku_name           = "GP_Standard_D2s_v3"  # General Purpose for prod
+  storage_mb         = 131072
+  
+  backup_retention_days        = 35  # Maximum retention
+  geo_redundant_backup_enabled = true
+  high_availability_enabled    = true
+  high_availability_mode      = "ZoneRedundant"
+  
+  administrator_login    = "psqladmin"
+  administrator_password = var.db_password
+  
+  private_endpoint_subnet_id = var.data_subnet_id
+  vnet_id                    = var.vnet_id
+  vnet_name                  = var.vnet_name
+}
+```
 
 ## Backup and Restore
 
@@ -149,6 +208,10 @@ export DATABASE_URL="postgresql://psqladmin:${DB_PASSWORD}@psql-ecare-dev.postgr
 Resources follow this naming pattern:
 
 - **PostgreSQL Server**: `psql-{project_name}-{environment}` (e.g., `psql-ecare-dev`)
+
+## Integration with Other Modules
+
+No specific integration with other modules.
 
 ## Prerequisites
 

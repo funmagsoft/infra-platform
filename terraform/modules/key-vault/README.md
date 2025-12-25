@@ -75,18 +75,13 @@ module "key_vault" {
 | private_endpoint_ip | Private IP address of the Private Endpoint | no |
 | private_dns_zone_id | ID of the Private DNS Zone for Key Vault | no |
 
-## Naming Convention
+## Module-Specific Configuration
 
-Resources follow this naming pattern:
-
-- Key Vault: `kv-{project_name}-{environment}` (e.g., `kv-ecare-dev`)
-- Private Endpoint: `{key_vault_name}-pe`
-
-## RBAC Authorization
+### RBAC Authorization
 
 This module uses RBAC by default. Grant access using Azure role assignments:
 
-### Common Roles
+#### Common Roles
 
 | Role | Purpose | Use Case |
 |------|---------|----------|
@@ -96,7 +91,7 @@ This module uses RBAC by default. Grant access using Azure role assignments:
 | Key Vault Certificates Officer | Manage certificates | Certificate automation |
 | Key Vault Crypto Officer | Manage keys | Encryption operations |
 
-### Grant Access Example
+#### Grant Access Example
 
 ```bash
 # Grant application identity access to read secrets
@@ -112,23 +107,23 @@ az role assignment create \
   --scope <key-vault-id>
 ```
 
-## Soft Delete and Purge Protection
+### Soft Delete and Purge Protection
 
-### Soft Delete
+#### Soft Delete
 
 - **Enabled by default** (Azure requirement)
 - Deleted vaults/secrets recoverable within retention period
 - Retention: 7-90 days (configurable)
 - Free feature
 
-### Purge Protection
+#### Purge Protection
 
 - **Prevents permanent deletion** during retention period
 - **Cannot be disabled once enabled** (irreversible!)
 - Recommended for production
 - Additional safety layer
 
-### Configuration Examples
+#### Configuration Examples
 
 ```hcl
 # Development: Short retention, no purge protection
@@ -140,7 +135,7 @@ soft_delete_retention_days = 90
 purge_protection_enabled   = true
 ```
 
-## SKU Comparison
+### SKU Comparison
 
 | Feature | Standard | Premium |
 |---------|----------|---------|
@@ -151,6 +146,13 @@ purge_protection_enabled   = true
 | Price | Lower | Higher |
 
 **Recommendation**: Use `standard` unless you need HSM-protected keys.
+
+## Naming Convention
+
+Resources follow this naming pattern:
+
+- Key Vault: `kv-{project_name}-{environment}` (e.g., `kv-ecare-dev`)
+- Private Endpoint: `{key_vault_name}-pe`
 
 ## Security Features
 
@@ -253,7 +255,9 @@ secret = client.get_secret("database-password")
 print(secret.value)
 ```
 
-## Integration with Phase 3 (Workload Identity)
+## Integration with Other Modules
+
+### Phase 3 (Workload Identity)
 
 Key Vault will be used to store:
 

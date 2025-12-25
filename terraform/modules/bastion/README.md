@@ -75,7 +75,9 @@ module "bastion" {
 | bastion_principal_id | Principal ID of the Bastion VM system-assigned identity | no |
 | bastion_nsg_id | ID of the Bastion NSG | no |
 
-## Installed Tools
+## Module-Specific Configuration
+
+### Installed Tools
 
 The cloud-init script automatically installs:
 
@@ -87,7 +89,7 @@ The cloud-init script automatically installs:
 6. **git** - Version control
 7. **curl, wget** - HTTP tools
 
-## Pre-configured Aliases
+### Pre-configured Aliases
 
 ```bash
 # Kubernetes shortcuts
@@ -107,7 +109,7 @@ kexec <pod>        # Execute shell in pod
 kport <pod> <port> # Port forward
 ```
 
-## Connecting to Bastion
+### Connecting to Bastion
 
 ### Using SSH
 
@@ -133,7 +135,7 @@ az ssh vm \
   --name vm-bastion-ecare-dev
 ```
 
-## Post-Deployment Setup
+### Post-Deployment Setup
 
 After VM is provisioned, login and configure Azure access:
 
@@ -155,7 +157,7 @@ psql -h psql-ecare-dev.postgres.database.azure.net \
      -d postgres
 ```
 
-## Granting Access to Resources
+### Granting Access to Resources
 
 The module output `bastion_principal_id` is used to grant RBAC roles:
 
@@ -173,8 +175,6 @@ resource "azurerm_role_assignment" "bastion_acr_pull" {
   scope                = module.acr.acr_id
 }
 ```
-
-## Security
 
 ### Network Security Group Rules
 
@@ -196,7 +196,7 @@ resource "azurerm_role_assignment" "bastion_acr_pull" {
 4. **Regular updates** - Keep VM and tools updated
 5. **Audit access** - Monitor SSH login attempts
 
-## VM Sizes
+### VM Sizes
 
 | Size | vCPU | Memory | Cost | Use Case |
 |------|------|--------|------|----------|
@@ -206,7 +206,7 @@ resource "azurerm_role_assignment" "bastion_acr_pull" {
 
 **Recommendation**: `Standard_B1s` is sufficient for bastion usage.
 
-## Cloud-init Script
+### Cloud-init Script
 
 Located at `scripts/cloud-init.tpl`, the script:
 
@@ -217,20 +217,20 @@ Located at `scripts/cloud-init.tpl`, the script:
 5. Sets up custom MOTD
 6. Enables managed identity login script
 
-## Troubleshooting
+### Troubleshooting
 
-### Cannot SSH to Bastion
+#### Cannot SSH to Bastion
 
 1. Check NSG rules allow your IP
 2. Verify public IP is assigned
 3. Check VM is running: `az vm get-instance-view`
 
-### Tools not installed
+#### Tools not installed
 
 1. Check cloud-init logs: `cat /var/log/cloud-init-output.log`
 2. Manually run: `sudo bash /var/lib/cloud/instance/scripts/part-001`
 
-### Cannot access AKS
+#### Cannot access AKS
 
 1. Verify managed identity role assignment
 2. Run: `az login --identity`
@@ -244,6 +244,62 @@ Resources follow this naming pattern:
 - **Public IP**: `pip-bastion-{project_name}-{environment}`
 - **NIC**: `nic-bastion-{project_name}-{environment}`
 - **NSG**: `nsg-bastion-{project_name}-{environment}`
+
+## Security Features
+
+- **Network Isolation**: NSG rules restrict SSH access to specified source IPs
+- **SSH Key Authentication**: Password authentication disabled by default
+- **Managed Identity**: System-assigned managed identity for Azure resource access (no stored credentials)
+- **Network Security Group**: Inbound SSH from allowed IPs only, outbound to AKS API and PostgreSQL
+- **Best Practices**: Restrict SSH source IPs, use SSH keys only, regular updates, audit access
+
+## Examples
+
+### Development Environment
+
+```hcl
+module "bastion" {
+  source = "../../modules/bastion"
+
+  resource_group_name = "rg-ecare-dev"
+  location            = "West Europe"
+  environment         = "dev"
+  
+  subnet_id      = var.mgmt_subnet_id
+  vm_size        = "Standard_B1s"  # Lower cost for dev
+  admin_username = "azureuser"
+  
+  allowed_ssh_source_ips = ["203.0.113.0/24"]  # Office IP range
+  
+  enable_system_assigned_identity = true
+  install_tools                  = true
+}
+```
+
+### Production Environment
+
+```hcl
+module "bastion" {
+  source = "../../modules/bastion"
+
+  resource_group_name = "rg-ecare-prod"
+  location            = "West Europe"
+  environment         = "prod"
+  
+  subnet_id      = var.mgmt_subnet_id
+  vm_size        = "Standard_D2s_v3"  # More resources for prod
+  admin_username = "azureuser"
+  
+  allowed_ssh_source_ips = ["203.0.113.0/24", "198.51.100.0/24"]  # Multiple IP ranges
+  
+  enable_system_assigned_identity = true
+  install_tools                  = true
+}
+```
+
+## Integration with Other Modules
+
+No specific integration with other modules.
 
 ## Prerequisites
 

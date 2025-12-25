@@ -13,7 +13,7 @@ When creating or updating module README.md files, use the following structure an
 
 ## Required Structure
 
-Every module README.md MUST follow this structure in the specified order:
+Every module README.md MUST follow this structure in the specified order. **ALL sections (1-13) are MANDATORY and MUST be present**, even if some sections are empty. This ensures consistency and readability across all module documentation.
 
 ### 1. Header and Description
 
@@ -106,14 +106,14 @@ Document all outputs in a table format:
 | {resource}_uri | URI of the {resource} | no |
 ```
 
-### 7. Module-Specific Configuration (Optional)
+### 7. Module-Specific Configuration
 
-Add module-specific sections as needed:
+**REQUIRED**: This section MUST always be present, even if empty. Add module-specific sections as needed:
 
 ```markdown
 ## Module-Specific Configuration
 
-{Optional section for module-specific details, examples, or advanced configuration}
+{Module-specific details, examples, or advanced configuration. If no module-specific content exists, use: "No module-specific configuration required."}
 
 ### {Subsection Title}
 
@@ -195,14 +195,14 @@ module "{module_name}" {
 \`\`\`
 ```
 
-### 11. Integration with Other Modules (Optional)
+### 11. Integration with Other Modules
 
-Document how this module integrates with others:
+**REQUIRED**: This section MUST always be present, even if empty. Document how this module integrates with others:
 
 ```markdown
 ## Integration with Other Modules
 
-{How this module integrates with other modules, if applicable}
+{How this module integrates with other modules. If no integration exists, use: "No specific integration with other modules."}
 ```
 
 ### 12. Prerequisites
