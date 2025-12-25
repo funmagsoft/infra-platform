@@ -81,26 +81,56 @@ module "aks" {
 - Can be scaled to zero (min_count = 0)
 - Multiple user pools supported
 
-## Key Inputs
+## Inputs
 
-| Name | Description | Default |
-|------|-------------|---------|
-| kubernetes_version | K8s version | Latest stable |
-| sku_tier | Free or Standard | Standard |
-| system_node_pool_vm_size | System pool VM size | Standard_D2s_v3 |
-| user_node_pool_vm_size | User pool VM size | Standard_A2_v2 |
-| oidc_issuer_enabled | Enable OIDC (for WI) | true |
-| workload_identity_enabled | Enable Workload Identity | true |
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| resource_group_name | Name of the resource group | `string` | - | yes |
+| location | Azure region for resources | `string` | - | yes |
+| environment | Environment name (dev, test, stage, prod) | `string` | - | yes |
+| project_name | Project name for resource naming | `string` | `"ecare"` | no |
+| kubernetes_version | Kubernetes version | `string` | - | no |
+| dns_prefix | DNS prefix for the cluster | `string` | - | no |
+| sku_tier | SKU tier (Free, Standard, Premium) | `string` | `"Standard"` | no |
+| vnet_subnet_id | Subnet ID for AKS nodes | `string` | - | yes |
+| network_plugin | Network plugin (azure or kubenet) | `string` | `"azure"` | no |
+| network_policy | Network policy (azure or calico) | `string` | `"azure"` | no |
+| service_cidr | CIDR for Kubernetes services | `string` | `"10.2.0.0/16"` | no |
+| dns_service_ip | IP address for Kubernetes DNS service | `string` | `"10.2.0.10"` | no |
+| system_node_pool_name | Name of the system node pool | `string` | `"system"` | no |
+| system_node_pool_vm_size | VM size for system node pool | `string` | `"Standard_D2s_v3"` | no |
+| system_node_pool_node_count | Number of nodes in system pool | `number` | `3` | no |
+| system_node_pool_os_disk_size_gb | OS disk size for system nodes | `number` | `128` | no |
+| user_node_pool_enabled | Enable user node pool | `bool` | `true` | no |
+| user_node_pool_name | Name of the user node pool | `string` | `"user"` | no |
+| user_node_pool_vm_size | VM size for user node pool | `string` | `"Standard_D2s_v3"` | no |
+| user_node_pool_min_count | Minimum number of nodes in user pool | `number` | `1` | no |
+| user_node_pool_max_count | Maximum number of nodes in user pool | `number` | `3` | no |
+| user_node_pool_os_disk_size_gb | OS disk size for user nodes | `number` | `128` | no |
+| identity_type | Identity type (SystemAssigned or UserAssigned) | `string` | `"SystemAssigned"` | no |
+| oidc_issuer_enabled | Enable OIDC issuer (required for Workload Identity) | `bool` | `true` | no |
+| workload_identity_enabled | Enable Workload Identity | `bool` | `true` | no |
+| azure_policy_enabled | Enable Azure Policy add-on | `bool` | `true` | no |
+| enable_auto_scaling | Enable auto-scaling for user node pool | `bool` | `true` | no |
+| log_analytics_workspace_id | Log Analytics Workspace ID for monitoring | `string` | - | no |
+| enable_container_insights | Enable Azure Monitor Container Insights | `bool` | `true` | no |
+| tags | Tags to apply to all resources | `map(string)` | `{}` | no |
 
-## Key Outputs
+## Outputs
 
 | Name | Description | Sensitive |
 |------|-------------|-----------|
-| aks_cluster_id | AKS resource ID | no |
-| aks_cluster_name | Cluster name | no |
-| aks_oidc_issuer_url | **OIDC Issuer URL** (Phase 3!) | no |
-| aks_kubelet_identity_object_id | Kubelet identity object ID | no |
-| aks_kube_config | Kubeconfig (raw) | yes |
+| aks_cluster_id | ID of the AKS cluster | no |
+| aks_cluster_name | Name of the AKS cluster | no |
+| aks_fqdn | FQDN of the AKS cluster | no |
+| aks_kube_config | Kubeconfig for the AKS cluster | yes |
+| aks_kube_config_admin | Admin kubeconfig for the AKS cluster | yes |
+| aks_kubelet_identity_object_id | Object ID of the kubelet identity | no |
+| aks_kubelet_identity_client_id | Client ID of the kubelet identity | no |
+| aks_oidc_issuer_url | OIDC Issuer URL (for Workload Identity) | no |
+| aks_node_resource_group | Resource group containing AKS node resources | no |
+| aks_principal_id | Principal ID of the AKS system-assigned identity | no |
+| user_node_pool_id | ID of the user node pool | no |
 
 ## OIDC Issuer URL (Phase 3)
 
@@ -244,16 +274,25 @@ az aks upgrade \
   --kubernetes-version 1.28.5
 ```
 
-## Naming
+## Naming Convention
 
-- AKS Cluster: `aks-{project_name}-{environment}`
-- Node Resource Group: `MC_{rg_name}_{aks_name}_{location}`
+Resources follow this naming pattern:
+
+- **AKS Cluster**: `aks-{project_name}-{environment}` (e.g., `aks-ecare-dev`)
+- **Node Resource Group**: `MC_{rg_name}_{aks_name}_{location}`
 
 ## Cost Optimization
 
 - Use Burstable VMs (B-series) for dev: `Standard_B2s`
 - Use auto-scaling with low min_count
 - Use spot instances for non-critical workloads (not in this module)
+
+## Prerequisites
+
+From Phase 1 (infra-foundation):
+
+- AKS subnet for cluster nodes
+- Log Analytics Workspace (optional, for Container Insights)
 
 ## Terraform Version
 

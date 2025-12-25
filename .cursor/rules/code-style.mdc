@@ -98,6 +98,20 @@ resource "azurerm_resource" "name" {
   - Dependencies between resources
 - **TODO Comments:** Use `# TODO:` for temporary workarounds or future improvements. Include context and expected resolution.
 - **Avoid:** Redundant comments that simply repeat what the code does. Comments should explain "why" not "what".
+- **Module Documentation:** All Terraform modules MUST have a `README.md` file that follows the template defined in `.cursor/rules/module-readme.mdc`. The README must include:
+  - Header and description
+  - Resources Created
+  - Features
+  - Usage example
+  - Complete Inputs table (all variables from `variables.tf`)
+  - Complete Outputs table (all outputs from `outputs.tf`)
+  - Module-specific configuration sections (if applicable)
+  - Naming Convention
+  - Security Features
+  - Examples (dev and prod)
+  - Prerequisites
+  - Terraform Version
+- **README Maintenance:** Whenever you modify a module (add/remove/change variables, outputs, resources, or features), you MUST update the corresponding `README.md` file to reflect these changes. Keep the documentation in sync with the code at all times.
 
 ## 9. Quality Control
 

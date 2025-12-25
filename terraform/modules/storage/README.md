@@ -41,10 +41,8 @@ module "storage" {
 
   # Private Endpoint configuration
   subnet_id = data.terraform_remote_state.foundation.outputs.data_subnet_id
-  private_dns_zone_ids = {
-    blob = data.terraform_remote_state.foundation.outputs.private_dns_zones.blob
-    file = data.terraform_remote_state.foundation.outputs.private_dns_zones.file
-  }
+  vnet_id   = data.terraform_remote_state.foundation.outputs.vnet_id
+  vnet_name = data.terraform_remote_state.foundation.outputs.vnet_name
 
   tags = {
     Environment = "dev"
@@ -55,13 +53,16 @@ module "storage" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
+|------|-------------|------|---------|:--------:|
 | resource_group_name | Name of the resource group | `string` | - | yes |
 | location | Azure region for resources | `string` | - | yes |
 | environment | Environment name (dev, test, stage, prod) | `string` | - | yes |
+| organization_name | Organization name for resource naming | `string` | `"hycom"` | no |
 | project_name | Project name for resource naming | `string` | `"ecare"` | no |
 | account_tier | Storage Account tier (Standard or Premium) | `string` | `"Standard"` | no |
 | account_replication_type | Replication type (LRS, GRS, RAGRS, ZRS) | `string` | `"LRS"` | no |
+| enable_https_traffic_only | Enable HTTPS traffic only | `bool` | `true` | no |
+| min_tls_version | Minimum TLS version | `string` | `"TLS1_2"` | no |
 | containers | List of container names to create | `list(string)` | `["app-data", "logs", "backups"]` | no |
 | enable_versioning | Enable blob versioning | `bool` | `true` | no |
 | enable_soft_delete_blob | Enable soft delete for blobs | `bool` | `true` | no |
@@ -69,7 +70,8 @@ module "storage" {
 | enable_soft_delete_container | Enable soft delete for containers | `bool` | `true` | no |
 | container_soft_delete_retention_days | Retention days for container soft delete | `number` | `7` | no |
 | subnet_id | Subnet ID for Private Endpoints | `string` | - | yes |
-| private_dns_zone_ids | Map of Private DNS Zone IDs for blob and file | `object({blob=string, file=string})` | - | yes |
+| vnet_id | Virtual Network ID for Private DNS Zone links | `string` | - | no |
+| vnet_name | Virtual Network name for Private DNS Zone links | `string` | - | no |
 | tags | Tags to apply to all resources | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -78,15 +80,17 @@ module "storage" {
 |------|-------------|-----------|
 | storage_account_id | ID of the Storage Account | no |
 | storage_account_name | Name of the Storage Account | no |
-| storage_account_primary_blob_endpoint | Primary blob endpoint | no |
-| storage_account_primary_file_endpoint | Primary file endpoint | no |
-| storage_account_primary_access_key | Primary access key | yes |
-| storage_account_primary_connection_string | Primary connection string | yes |
+| storage_account_primary_blob_endpoint | Primary blob endpoint of the Storage Account | no |
+| storage_account_primary_file_endpoint | Primary file endpoint of the Storage Account | no |
+| storage_account_primary_access_key | Primary access key of the Storage Account | yes |
+| storage_account_primary_connection_string | Primary connection string of the Storage Account | yes |
 | container_names | Names of created containers | no |
 | blob_private_endpoint_id | ID of the Blob Private Endpoint | no |
-| blob_private_endpoint_ip | Private IP of the Blob Private Endpoint | no |
+| blob_private_endpoint_ip | Private IP address of the Blob Private Endpoint | no |
 | file_private_endpoint_id | ID of the File Private Endpoint | no |
-| file_private_endpoint_ip | Private IP of the File Private Endpoint | no |
+| file_private_endpoint_ip | Private IP address of the File Private Endpoint | no |
+| blob_private_dns_zone_id | ID of the Private DNS Zone for Blob Storage | no |
+| file_private_dns_zone_id | ID of the Private DNS Zone for File Storage | no |
 
 ## Naming Convention
 
@@ -141,8 +145,9 @@ module "storage" {
   
   blob_soft_delete_retention_days = 7  # Short retention for dev
   
-  subnet_id            = var.data_subnet_id
-  private_dns_zone_ids = var.private_dns_zones
+  subnet_id = var.data_subnet_id
+  vnet_id   = var.vnet_id
+  vnet_name = var.vnet_name
 }
 ```
 
@@ -160,8 +165,9 @@ module "storage" {
   blob_soft_delete_retention_days = 30  # Longer retention for prod
   enable_versioning                = true
   
-  subnet_id            = var.data_subnet_id
-  private_dns_zone_ids = var.private_dns_zones
+  subnet_id = var.data_subnet_id
+  vnet_id   = var.vnet_id
+  vnet_name = var.vnet_name
 }
 ```
 
@@ -190,8 +196,7 @@ export STORAGE_CONNECTION_STRING=$(terraform output -raw storage_account_primary
 From Phase 1 (infra-foundation):
 
 - Data subnet for Private Endpoints
-- Private DNS Zone for `*.blob.core.windows.net`
-- Private DNS Zone for `*.file.core.windows.net`
+- Virtual Network ID and name for Private DNS Zone links
 
 ## Terraform Version
 

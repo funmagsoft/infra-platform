@@ -33,8 +33,9 @@ module "key_vault" {
   soft_delete_retention_days = 7      # 90 for production
 
   # Private Endpoint configuration
-  subnet_id           = data.terraform_remote_state.foundation.outputs.data_subnet_id
-  private_dns_zone_id = data.terraform_remote_state.foundation.outputs.private_dns_zones.keyvault
+  subnet_id = data.terraform_remote_state.foundation.outputs.data_subnet_id
+  vnet_id   = data.terraform_remote_state.foundation.outputs.vnet_id
+  vnet_name = data.terraform_remote_state.foundation.outputs.vnet_name
 
   tags = {
     Environment = "dev"
@@ -45,17 +46,22 @@ module "key_vault" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
+|------|-------------|------|---------|:--------:|
 | resource_group_name | Name of the resource group | `string` | - | yes |
 | location | Azure region for resources | `string` | - | yes |
 | environment | Environment name (dev, test, stage, prod) | `string` | - | yes |
 | project_name | Project name for resource naming | `string` | `"ecare"` | no |
-| sku_name | SKU for Key Vault (standard or premium) | `string` | `"standard"` | no |
-| purge_protection_enabled | Enable purge protection (irreversible) | `bool` | `false` | no |
+| sku_name | SKU name for Key Vault (standard or premium) | `string` | `"standard"` | no |
+| enabled_for_deployment | Enable Azure Virtual Machines to retrieve certificates | `bool` | `false` | no |
+| enabled_for_disk_encryption | Enable Azure Disk Encryption to retrieve secrets | `bool` | `false` | no |
+| enabled_for_template_deployment | Enable Azure Resource Manager to retrieve secrets | `bool` | `true` | no |
+| rbac_authorization_enabled | Use RBAC for authorization instead of access policies | `bool` | `true` | no |
 | soft_delete_retention_days | Retention days for soft delete (7-90) | `number` | `90` | no |
-| rbac_authorization_enabled | Use RBAC for authorization | `bool` | `true` | no |
+| purge_protection_enabled | Enable purge protection (cannot be disabled once enabled) | `bool` | `false` | no |
+| public_network_access_enabled | Enable public network access | `bool` | `true` | no |
 | subnet_id | Subnet ID for Private Endpoint | `string` | - | yes |
-| private_dns_zone_id | Private DNS Zone ID for Key Vault | `string` | - | yes |
+| vnet_id | Virtual Network ID for Private DNS Zone link | `string` | - | no |
+| vnet_name | Virtual Network name for Private DNS Zone link | `string` | - | no |
 | tags | Tags to apply to all resources | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -66,7 +72,8 @@ module "key_vault" {
 | key_vault_name | Name of the Key Vault | no |
 | key_vault_uri | URI of the Key Vault | no |
 | private_endpoint_id | ID of the Private Endpoint | no |
-| private_endpoint_ip | Private IP of the Private Endpoint | no |
+| private_endpoint_ip | Private IP address of the Private Endpoint | no |
+| private_dns_zone_id | ID of the Private DNS Zone for Key Vault | no |
 
 ## Naming Convention
 
@@ -176,8 +183,9 @@ module "key_vault" {
   purge_protection_enabled   = false  # Flexible for dev
   soft_delete_retention_days = 7      # Short retention
 
-  subnet_id           = var.data_subnet_id
-  private_dns_zone_id = var.keyvault_dns_zone_id
+  subnet_id = var.data_subnet_id
+  vnet_id   = var.vnet_id
+  vnet_name = var.vnet_name
 }
 ```
 
@@ -195,8 +203,9 @@ module "key_vault" {
   purge_protection_enabled   = true       # Extra protection
   soft_delete_retention_days = 90         # Maximum retention
 
-  subnet_id           = var.data_subnet_id
-  private_dns_zone_id = var.keyvault_dns_zone_id
+  subnet_id = var.data_subnet_id
+  vnet_id   = var.vnet_id
+  vnet_name = var.vnet_name
 }
 ```
 
@@ -260,7 +269,7 @@ Workload Identity will access secrets using Federated Identity Credentials (no s
 From Phase 1 (infra-foundation):
 
 - Data subnet for Private Endpoint
-- Private DNS Zone for `*.vault.azure.net`
+- Virtual Network ID and name for Private DNS Zone link
 
 ## Terraform Version
 

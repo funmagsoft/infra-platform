@@ -2,31 +2,13 @@
 
 Terraform module for deploying a Bastion (jump host) VM with pre-installed management tools for accessing private Azure resources.
 
-## Resources
+## Resources Created
 
-- Linux VM (Ubuntu 22.04 LTS)
-- Static Public IP (Standard)
-- Network Interface in the management subnet
-- Network Security Group with SSH allow rule
-- SSH key (generated or provided)
-
-## Key Inputs
-
-- `resource_group_name`, `location`
-- `environment`, `project_name`
-- `subnet_id` (mgmt subnet)
-- `vm_size` (default: `Standard_D2als_v6`)
-- `admin_username` (default: `azureuser`)
-- `admin_ssh_public_key` (optional; otherwise generated)
-- `allowed_ssh_source_ips` (list, default `["0.0.0.0/0"]`; restrict in prod)
-- `install_tools` (default: `true`)
-- `enable_system_assigned_identity` (default: `true`)
-
-## Key Outputs
-
-- `bastion_vm_id`, `bastion_public_ip`, `bastion_private_ip`
-- `bastion_ssh_private_key` (sensitive, when generated)
-- `bastion_principal_id` (managed identity)
+- **Linux VM** - Ubuntu 22.04 LTS virtual machine
+- **Static Public IP** - Standard public IP address
+- **Network Interface** - Network interface in the management subnet
+- **Network Security Group** - NSG with SSH allow rule
+- **SSH Key** - Generated or provided SSH key pair
 
 ## Features
 
@@ -57,26 +39,41 @@ module "bastion" {
 }
 ```
 
-## Key Inputs
+## Inputs
 
-| Name | Description | Default |
-|------|-------------|---------|
-| vm_size | VM size | Standard_B1s |
-| admin_username | SSH username | azureuser |
-| ubuntu_sku | Ubuntu version | 22_04-lts-gen2 |
-| allowed_ssh_source_ips | Allowed SSH source IPs | ["0.0.0.0/0"] |
-| admin_ssh_public_key | SSH public key (optional) | auto-generated |
-| install_tools | Install tools via cloud-init | true |
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| resource_group_name | Name of the resource group | `string` | - | yes |
+| location | Azure region for resources | `string` | - | yes |
+| environment | Environment name (dev, test, stage, prod) | `string` | - | yes |
+| project_name | Project name for resource naming | `string` | `"ecare"` | no |
+| subnet_id | Subnet ID for Bastion VM | `string` | - | yes |
+| vm_size | VM size for Bastion | `string` | `"Standard_D2als_v6"` | no |
+| admin_username | Admin username for Bastion VM | `string` | `"azureuser"` | no |
+| admin_ssh_public_key | SSH public key for Bastion VM admin user | `string` | - | no |
+| disable_password_authentication | Disable password authentication (use SSH keys only) | `bool` | `true` | no |
+| ubuntu_sku | Ubuntu SKU for Jammy (22.04) | `string` | `"22_04-lts-gen2"` | no |
+| os_disk_size_gb | OS disk size in GB | `number` | `30` | no |
+| os_disk_storage_account_type | Storage account type for OS disk | `string` | `"Standard_LRS"` | no |
+| allowed_ssh_source_ips | List of source IPs allowed for SSH access | `list(string)` | `["0.0.0.0/0"]` | no |
+| enable_system_assigned_identity | Enable system-assigned managed identity | `bool` | `true` | no |
+| install_tools | Install common tools (az, kubectl, psql, helm) | `bool` | `true` | no |
+| additional_users | Map of additional users to create on bastion | `map(list(string))` | `{}` | no |
+| tags | Tags to apply to all resources | `map(string)` | `{}` | no |
 
-## Key Outputs
+## Outputs
 
 | Name | Description | Sensitive |
 |------|-------------|-----------|
-| bastion_vm_id | VM resource ID | no |
-| bastion_public_ip | Public IP address | no |
-| bastion_private_ip | Private IP address | no |
-| bastion_ssh_private_key | Generated SSH private key | yes |
-| bastion_principal_id | Managed identity principal ID | no |
+| bastion_vm_id | ID of the Bastion VM | no |
+| bastion_vm_name | Name of the Bastion VM | no |
+| bastion_public_ip | Public IP address of the Bastion VM | no |
+| bastion_private_ip | Private IP address of the Bastion VM | no |
+| bastion_admin_username | Admin username for Bastion VM | no |
+| bastion_ssh_private_key | SSH private key for Bastion VM (if generated) | yes |
+| bastion_ssh_public_key | SSH public key for Bastion VM | no |
+| bastion_principal_id | Principal ID of the Bastion VM system-assigned identity | no |
+| bastion_nsg_id | ID of the Bastion NSG | no |
 
 ## Installed Tools
 
@@ -239,12 +236,20 @@ Located at `scripts/cloud-init.tpl`, the script:
 2. Run: `az login --identity`
 3. Get credentials: `az aks get-credentials ...`
 
-## Naming
+## Naming Convention
 
-- VM: `vm-bastion-{project_name}-{environment}`
-- Public IP: `pip-bastion-{project_name}-{environment}`
-- NIC: `nic-bastion-{project_name}-{environment}`
-- NSG: `nsg-bastion-{project_name}-{environment}`
+Resources follow this naming pattern:
+
+- **VM**: `vm-bastion-{project_name}-{environment}` (e.g., `vm-bastion-ecare-dev`)
+- **Public IP**: `pip-bastion-{project_name}-{environment}`
+- **NIC**: `nic-bastion-{project_name}-{environment}`
+- **NSG**: `nsg-bastion-{project_name}-{environment}`
+
+## Prerequisites
+
+From Phase 1 (infra-foundation):
+
+- Management subnet for Bastion VM
 
 ## Terraform Version
 
