@@ -140,4 +140,3 @@ module "monitoring" {
 
 - Terraform >= 1.5.0
 - AzureRM Provider ~> 3.0
-

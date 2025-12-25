@@ -365,4 +365,3 @@ variable "bastion_additional_users" {
   type        = map(list(string))
   default     = {}
 }
-

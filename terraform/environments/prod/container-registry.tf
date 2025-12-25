@@ -21,4 +21,3 @@ module "acr" {
 
   tags = local.common_tags
 }
-

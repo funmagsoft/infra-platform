@@ -172,4 +172,3 @@ echo "  4. Apply changes:        terraform apply tfplan"
 echo ""
 echo "Or run deployment script:"
 echo "  ${SCRIPT_DIR}/deploy-environment.sh ${ENV}"
-

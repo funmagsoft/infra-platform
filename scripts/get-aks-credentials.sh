@@ -85,7 +85,7 @@ if [ "$ADMIN_MODE" == "true" ]; then
     --name "$AKS_NAME" \
     --admin \
     --overwrite-existing
-  
+
   echo -e "${GREEN}✓ Admin credentials retrieved${NC}"
   echo -e "${YELLOW}⚠ You now have cluster-admin privileges${NC}"
 else
@@ -93,7 +93,7 @@ else
     --resource-group "$RG" \
     --name "$AKS_NAME" \
     --overwrite-existing
-  
+
   echo -e "${GREEN}✓ User credentials retrieved${NC}"
 fi
 
@@ -102,36 +102,36 @@ echo "Step 3: Testing cluster connectivity..."
 
 if kubectl cluster-info > /dev/null 2>&1; then
   echo -e "${GREEN}✓ Cluster is accessible${NC}"
-  
+
   # Show cluster info
   echo ""
   kubectl cluster-info
-  
+
   echo ""
   echo "Step 4: Checking cluster health..."
-  
+
   # Get nodes
   NODE_COUNT=$(kubectl get nodes --no-headers 2>/dev/null | wc -l)
   READY_NODES=$(kubectl get nodes --no-headers 2>/dev/null | grep -c " Ready " || echo "0")
-  
+
   echo -e "  Nodes: ${NODE_COUNT} total, ${READY_NODES} ready"
-  
+
   # Show nodes
   echo ""
   kubectl get nodes
-  
+
   # Get namespaces
   echo ""
   echo "Step 5: Checking namespaces..."
   kubectl get namespaces
-  
+
   # Check system pods
   echo ""
   echo "Step 6: Checking system pods..."
   SYSTEM_PODS=$(kubectl get pods -n kube-system --no-headers 2>/dev/null | wc -l)
   RUNNING_PODS=$(kubectl get pods -n kube-system --no-headers 2>/dev/null | grep -c "Running" || echo "0")
   echo -e "  System pods: ${SYSTEM_PODS} total, ${RUNNING_PODS} running"
-  
+
   echo ""
   echo -e "${GREEN}=== Cluster is healthy and accessible ===${NC}"
   echo ""
@@ -145,7 +145,7 @@ if kubectl cluster-info > /dev/null 2>&1; then
   echo "To switch back to another cluster:"
   echo "  kubectl config use-context <context-name>"
   echo "  kubectl config get-contexts  # List all contexts"
-  
+
 else
   echo -e "${RED}✗ Cannot connect to cluster${NC}"
   echo ""
@@ -159,4 +159,3 @@ else
   echo "     az role assignment list --assignee <your-user-id> --scope <cluster-id>"
   exit 1
 fi
-

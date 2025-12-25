@@ -132,4 +132,3 @@ resource "azurerm_private_endpoint" "this" {
     }
   )
 }
-

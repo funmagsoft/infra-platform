@@ -54,4 +54,3 @@ output "user_node_pool_id" {
   description = "ID of the user node pool"
   value       = try(azurerm_kubernetes_cluster_node_pool.user[0].id, null)
 }
-

@@ -15,4 +15,3 @@ locals {
   data_subnet_id = data.terraform_remote_state.foundation.outputs.data_subnet_id
   mgmt_subnet_id = data.terraform_remote_state.foundation.outputs.mgmt_subnet_id
 }
-

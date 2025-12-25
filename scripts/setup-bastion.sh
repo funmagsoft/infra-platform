@@ -265,4 +265,3 @@ echo "  - jq, git, curl, wget"
 echo ""
 echo "Useful aliases configured:"
 echo "  k, kgp, kgs, kgn, kd, kl"
-

@@ -61,7 +61,7 @@ if [ "$ENV" == "prod" ]; then
   echo "  - Service Bus and all messages"
   echo "  - ACR and all container images"
   echo ""
-  
+
   if [ "$FORCE" == "false" ]; then
     read -p "Type 'destroy-production' to confirm: " CONFIRM
     if [ "$CONFIRM" != "destroy-production" ]; then
@@ -119,14 +119,14 @@ if terraform apply destroy.tfplan; then
   DURATION=$((END_TIME - START_TIME))
   DURATION_MIN=$((DURATION / 60))
   DURATION_SEC=$((DURATION % 60))
-  
+
   echo ""
   echo -e "${GREEN}✓ Destruction completed successfully${NC}"
   echo -e "${GREEN}  Duration: ${DURATION_MIN}m ${DURATION_SEC}s${NC}"
-  
+
   # Clean up plan file
   rm -f destroy.tfplan
-  
+
   echo ""
   echo -e "${YELLOW}Note: The following resources were NOT deleted:${NC}"
   echo "  - Resource Group (rg-ecare-${ENV}) - managed outside Terraform"
@@ -135,7 +135,7 @@ if terraform apply destroy.tfplan; then
   echo ""
   echo "To completely remove the environment, run:"
   echo "  az group delete --name rg-ecare-${ENV} --yes"
-  
+
 else
   echo ""
   echo -e "${RED}✗ Destruction failed!${NC}"
@@ -144,4 +144,3 @@ else
   echo "You may need to manually delete some resources via Azure Portal."
   exit 1
 fi
-

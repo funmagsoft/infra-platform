@@ -45,4 +45,3 @@ output "application_insights_app_id" {
   description = "Application ID of the Application Insights instance"
   value       = azurerm_application_insights.this.app_id
 }
-

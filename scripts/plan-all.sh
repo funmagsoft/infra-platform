@@ -30,21 +30,21 @@ FAILED_ENVS=0
 
 for ENV in $ENVIRONMENTS; do
   TOTAL_ENVS=$((TOTAL_ENVS + 1))
-  
+
   echo ""
   echo -e "${BLUE}=== Planning ${ENV} environment ===${NC}"
   echo ""
-  
+
   ENV_DIR="${REPO_DIR}/terraform/environments/${ENV}"
-  
+
   if [ ! -d "$ENV_DIR" ]; then
     echo -e "${RED}✗ Environment directory not found: ${ENV_DIR}${NC}"
     FAILED_ENVS=$((FAILED_ENVS + 1))
     continue
   fi
-  
+
   cd "$ENV_DIR"
-  
+
   # Initialize if needed
   if [ ! -d ".terraform" ]; then
     echo "Initializing Terraform..."
@@ -54,24 +54,24 @@ for ENV in $ENVIRONMENTS; do
       continue
     fi
   fi
-  
+
   # Create plan
   PLAN_FILE="tfplan-${ENV}-$(date +%Y%m%d-%H%M%S)"
-  
+
   echo "Creating plan..."
   if terraform plan -out="$PLAN_FILE" -input=false; then
     echo -e "${GREEN}✓ Plan created for ${ENV}: ${PLAN_FILE}${NC}"
-    
+
     # Show summary
     RESOURCES_TO_ADD=$(terraform show -json "$PLAN_FILE" | jq -r '[.resource_changes[] | select(.change.actions[] == "create")] | length' 2>/dev/null || echo "0")
     RESOURCES_TO_CHANGE=$(terraform show -json "$PLAN_FILE" | jq -r '[.resource_changes[] | select(.change.actions[] == "update")] | length' 2>/dev/null || echo "0")
     RESOURCES_TO_DESTROY=$(terraform show -json "$PLAN_FILE" | jq -r '[.resource_changes[] | select(.change.actions[] == "delete")] | length' 2>/dev/null || echo "0")
-    
+
     echo "  Changes:"
     echo -e "    ${GREEN}+ ${RESOURCES_TO_ADD} to add${NC}"
     echo -e "    ${YELLOW}~ ${RESOURCES_TO_CHANGE} to change${NC}"
     echo -e "    ${RED}- ${RESOURCES_TO_DESTROY} to destroy${NC}"
-    
+
     SUCCESS_ENVS=$((SUCCESS_ENVS + 1))
   else
     echo -e "${RED}✗ Plan failed for ${ENV}${NC}"
@@ -99,4 +99,3 @@ else
   echo -e "${RED}✗ Some plans failed. Please review errors above.${NC}"
   exit 1
 fi
-

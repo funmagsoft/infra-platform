@@ -21,4 +21,3 @@ module "service_bus" {
 
   tags = local.common_tags
 }
-

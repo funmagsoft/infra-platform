@@ -130,4 +130,3 @@ export DATABASE_URL="postgresql://psqladmin:${DB_PASSWORD}@psql-ecare-dev.postgr
 
 - Terraform >= 1.5.0
 - AzureRM Provider ~> 3.0
-

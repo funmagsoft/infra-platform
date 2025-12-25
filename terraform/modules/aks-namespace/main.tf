@@ -1,3 +1,13 @@
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+  }
+}
+
 resource "kubernetes_namespace_v1" "this" {
   metadata {
     name = var.namespace
@@ -13,4 +23,3 @@ resource "kubernetes_namespace_v1" "this" {
     )
   }
 }
-

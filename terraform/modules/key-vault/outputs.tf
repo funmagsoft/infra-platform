@@ -27,4 +27,3 @@ output "private_dns_zone_id" {
   description = "ID of the Private DNS Zone for Key Vault"
   value       = azurerm_private_dns_zone.this.id
 }
-

@@ -16,4 +16,3 @@ module "monitoring" {
 
   tags = local.common_tags
 }
-

@@ -232,4 +232,3 @@ output "deployment_summary" {
     log_analytics        = module.monitoring.log_analytics_workspace_name
   }
 }
-

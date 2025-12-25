@@ -107,9 +107,9 @@ FAILED=0
 echo "$RESOURCES" | jq -r '.[] | .Id' | while read -r RESOURCE_ID; do
   RESOURCE_NAME=$(echo "$RESOURCES" | jq -r ".[] | select(.Id==\"$RESOURCE_ID\") | .Name")
   RESOURCE_TYPE=$(echo "$RESOURCES" | jq -r ".[] | select(.Id==\"$RESOURCE_ID\") | .Type")
-  
+
   echo -n "Deleting ${RESOURCE_NAME} (${RESOURCE_TYPE})... "
-  
+
   if az resource delete --ids "$RESOURCE_ID" --output none 2>/dev/null; then
     echo -e "${GREEN}✓${NC}"
     DELETED=$((DELETED + 1))
@@ -131,4 +131,3 @@ echo -e "${GREEN}✓ Selective deletion complete${NC}"
 echo ""
 echo "Remaining resources in ${RG}:"
 az resource list --resource-group "$RG" --output table
-

@@ -22,9 +22,9 @@ FAILED_CHECKS=0
 check_resource() {
   local DESCRIPTION="$1"
   local COMMAND="$2"
-  
+
   TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-  
+
   if eval "$COMMAND" > /dev/null 2>&1; then
     echo -e "${GREEN}✓${NC} ${DESCRIPTION}"
     PASSED_CHECKS=$((PASSED_CHECKS + 1))
@@ -43,70 +43,70 @@ ENVIRONMENTS=(dev)
 for ENV in "${ENVIRONMENTS[@]}"; do
   echo ""
   echo "=== Validating ${ENV} environment ==="
-  
+
   RG="rg-ecare-${ENV}"
-  
+
   # Check if environment exists (Resource Group)
   if ! az group show --name "$RG" --output none 2>/dev/null; then
     echo -e "${YELLOW}⚠${NC}  Environment ${ENV} not deployed yet - skipping"
     continue
   fi
-  
+
   echo ""
   echo "Checking Monitoring Resources..."
   check_resource "Log Analytics Workspace (log-ecare-${ENV})" \
     "az resource show --resource-group '$RG' --name 'log-ecare-${ENV}' --resource-type 'Microsoft.OperationalInsights/workspaces' --output none"
-  
+
   check_resource "Application Insights (appi-ecare-${ENV})" \
     "az resource show --resource-group '$RG' --name 'appi-ecare-${ENV}' --resource-type 'Microsoft.Insights/components' --output none"
-  
+
   echo ""
   echo "Checking Storage Resources..."
   check_resource "Storage Account (stecare${ENV})" \
     "az storage account show --resource-group '$RG' --name 'stecare${ENV}' --output none"
-  
+
   # Check containers
   for CONTAINER in app-data logs backups; do
     check_resource "Storage Container (${CONTAINER})" \
       "az storage container exists --account-name 'stecare${ENV}' --name '${CONTAINER}' --auth-mode login --query 'exists' -o tsv | grep -q 'true'"
   done
-  
+
   # Check Private Endpoints for Storage
   check_resource "Storage Blob Private Endpoint" \
     "az network private-endpoint show --resource-group '$RG' --name 'stecare${ENV}-blob-pe' --output none"
-  
+
   check_resource "Storage File Private Endpoint" \
     "az network private-endpoint show --resource-group '$RG' --name 'stecare${ENV}-file-pe' --output none"
-  
+
   echo ""
   echo "Checking Key Vault..."
   check_resource "Key Vault (kv-ecare-${ENV})" \
     "az keyvault show --resource-group '$RG' --name 'kv-ecare-${ENV}' --output none"
-  
+
   check_resource "Key Vault Private Endpoint" \
     "az network private-endpoint show --resource-group '$RG' --name 'kv-ecare-${ENV}-pe' --output none"
-  
+
   echo ""
   echo "Checking Azure Container Registry..."
   check_resource "ACR (acrecare${ENV})" \
     "az acr show --resource-group '$RG' --name 'acrecare${ENV}' --output none"
-  
+
   check_resource "ACR Private Endpoint" \
     "az network private-endpoint show --resource-group '$RG' --name 'acrecare${ENV}-pe' --output none"
-  
+
   echo ""
   echo "Checking PostgreSQL..."
   check_resource "PostgreSQL Server (psql-ecare-${ENV})" \
     "az postgres flexible-server show --resource-group '$RG' --name 'psql-ecare-${ENV}' --output none"
-  
+
   check_resource "PostgreSQL Private Endpoint" \
     "az network private-endpoint show --resource-group '$RG' --name 'psql-ecare-${ENV}-pe' --output none"
-  
+
   echo ""
   echo "Checking Service Bus..."
   check_resource "Service Bus Namespace (sb-ecare-${ENV})" \
     "az servicebus namespace show --resource-group '$RG' --name 'sb-ecare-${ENV}' --output none"
-  
+
   # Check Service Bus Private Endpoint (only for Premium SKU)
   SB_SKU=$(az servicebus namespace show --resource-group "$RG" --name "sb-ecare-${ENV}" --query "sku.name" -o tsv 2>/dev/null)
   if [ "$SB_SKU" = "Premium" ]; then
@@ -117,17 +117,17 @@ for ENV in "${ENVIRONMENTS[@]}"; do
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
     PASSED_CHECKS=$((PASSED_CHECKS + 1))
   fi
-  
+
   echo ""
   echo "Checking AKS..."
   check_resource "AKS Cluster (aks-ecare-${ENV})" \
     "az aks show --resource-group '$RG' --name 'aks-ecare-${ENV}' --output none"
-  
+
   # Check AKS nodes
   if az aks show --resource-group "$RG" --name "aks-ecare-${ENV}" --output none 2>/dev/null; then
     az aks get-credentials --resource-group "$RG" --name "aks-ecare-${ENV}" --overwrite-existing --output none 2>/dev/null
     NODE_COUNT=$(kubectl get nodes --no-headers 2>/dev/null | wc -l || echo "0")
-    
+
     if [ "$NODE_COUNT" -gt 0 ]; then
       echo -e "${GREEN}✓${NC} AKS nodes running (${NODE_COUNT} nodes)"
       PASSED_CHECKS=$((PASSED_CHECKS + 1))
@@ -136,7 +136,7 @@ for ENV in "${ENVIRONMENTS[@]}"; do
       FAILED_CHECKS=$((FAILED_CHECKS + 1))
     fi
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-    
+
     # Check OIDC Issuer (Workload Identity)
     OIDC_ISSUER=$(az aks show --resource-group "$RG" --name "aks-ecare-${ENV}" --query "oidcIssuerProfile.issuerUrl" -o tsv 2>/dev/null)
     if [ -n "$OIDC_ISSUER" ] && [ "$OIDC_ISSUER" != "null" ]; then
@@ -148,25 +148,25 @@ for ENV in "${ENVIRONMENTS[@]}"; do
     fi
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
   fi
-  
+
   echo ""
   echo "Checking Bastion VM..."
   check_resource "Bastion VM (vm-bastion-ecare-${ENV})" \
     "az vm show --resource-group '$RG' --name 'vm-bastion-ecare-${ENV}' --output none"
-  
+
   # Check VM power state
   if az vm show --resource-group "$RG" --name "vm-bastion-ecare-${ENV}" --output none 2>/dev/null; then
     POWER_STATE=$(az vm get-instance-view --resource-group "$RG" --name "vm-bastion-ecare-${ENV}" --query "instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus" -o tsv)
     echo -e "  ${YELLOW}ℹ${NC}  VM Power State: ${POWER_STATE}"
   fi
-  
+
   echo ""
   echo "Checking Private Endpoints..."
   PE_COUNT=$(az network private-endpoint list \
     --resource-group "$RG" \
     --query "length(@)" -o tsv)
   echo -e "${GREEN}✓${NC} Private Endpoints count: ${PE_COUNT}"
-  
+
   # Check Terraform state
   echo ""
   echo "Checking Terraform State..."
@@ -185,7 +185,7 @@ for ENV in "${ENVIRONMENTS[@]}"; do
     FAILED_CHECKS=$((FAILED_CHECKS + 1))
   fi
   TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-  
+
   echo ""
   echo -e "${GREEN}✓ ${ENV} environment validated${NC}"
 done
@@ -206,4 +206,3 @@ else
   echo -e "${RED}✗ Some validations failed. Please review errors above.${NC}"
   exit 1
 fi
-

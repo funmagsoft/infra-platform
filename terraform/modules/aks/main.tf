@@ -118,4 +118,3 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
 
 # Note: ACR Pull role assignment is created in the environment main.tf
 # to avoid count/for_each issues with dynamic acr_id from module output
-

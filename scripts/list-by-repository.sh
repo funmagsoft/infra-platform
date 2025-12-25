@@ -53,7 +53,7 @@ echo ""
 # Group by repository
 for REPO in "infra-foundation" "infra-platform" "infra-workload-identity" "untagged"; do
   echo -e "${YELLOW}=== ${REPO} ===${NC}"
-  
+
   if [ "$REPO" == "untagged" ]; then
     # Resources without GitRepository tag
     RESOURCES=$(echo "$ALL_RESOURCES" | jq '[.[] | select(.tags.GitRepository == null)]')
@@ -61,16 +61,16 @@ for REPO in "infra-foundation" "infra-platform" "infra-workload-identity" "untag
     # Resources with specific GitRepository tag
     RESOURCES=$(echo "$ALL_RESOURCES" | jq --arg repo "$REPO" '[.[] | select(.tags.GitRepository == $repo)]')
   fi
-  
+
   COUNT=$(echo "$RESOURCES" | jq '. | length')
-  
+
   if [ "$COUNT" -eq 0 ]; then
     echo "  (no resources)"
   else
     echo -e "  ${GREEN}${COUNT} resources:${NC}"
     echo "$RESOURCES" | jq -r '.[] | "    - \(.name) (\(.type))"'
   fi
-  
+
   echo ""
 done
 
@@ -90,4 +90,3 @@ fi
 
 echo ""
 echo -e "${BLUE}Total: ${TOTAL_COUNT} resources${NC}"
-

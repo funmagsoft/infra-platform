@@ -106,4 +106,3 @@ bastion_additional_users = {
   #   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC... user1@example.com"
   # ]
 }
-

@@ -102,4 +102,3 @@ az role assignment create \
 
 - Terraform >= 1.5.0
 - AzureRM Provider ~> 3.0
-

@@ -3,6 +3,7 @@
 Terraform module for deploying a Bastion (jump host) VM with pre-installed management tools for accessing private Azure resources.
 
 ## Resources
+
 - Linux VM (Ubuntu 22.04 LTS)
 - Static Public IP (Standard)
 - Network Interface in the management subnet
@@ -10,6 +11,7 @@ Terraform module for deploying a Bastion (jump host) VM with pre-installed manag
 - SSH key (generated or provided)
 
 ## Key Inputs
+
 - `resource_group_name`, `location`
 - `environment`, `project_name`
 - `subnet_id` (mgmt subnet)
@@ -21,11 +23,13 @@ Terraform module for deploying a Bastion (jump host) VM with pre-installed manag
 - `enable_system_assigned_identity` (default: `true`)
 
 ## Key Outputs
+
 - `bastion_vm_id`, `bastion_public_ip`, `bastion_private_ip`
 - `bastion_ssh_private_key` (sensitive, when generated)
 - `bastion_principal_id` (managed identity)
 
 ## Features
+
 - Installs tools via cloud-init: Azure CLI, kubectl (+completion), Helm (+completion), psql, jq, git, curl, wget.
 - Preconfigured aliases and helper functions.
 - Custom MOTD with quick instructions.
@@ -247,4 +251,3 @@ Located at `scripts/cloud-init.tpl`, the script:
 - Terraform >= 1.5.0
 - AzureRM Provider ~> 3.0
 - TLS Provider ~> 4.0 (for SSH key generation)
-

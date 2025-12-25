@@ -43,4 +43,3 @@ resource "azurerm_application_insights" "this" {
     }
   )
 }
-

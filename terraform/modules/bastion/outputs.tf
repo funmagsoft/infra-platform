@@ -55,4 +55,3 @@ output "bastion_cloud_init_base64" {
   value       = local.cloud_init_script != null ? base64encode(local.cloud_init_script) : null
   sensitive   = false
 }
-

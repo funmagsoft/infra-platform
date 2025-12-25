@@ -72,16 +72,16 @@ runcmd:
     alias kgn='kubectl get nodes'
     alias kd='kubectl describe'
     alias kl='kubectl logs'
-    
+
     # Azure aliases
     alias azls='az account show'
     alias azrg='az group list -o table'
-    
+
     # Useful functions
     kexec() {
       kubectl exec -it "$1" -- /bin/bash
     }
-    
+
     kport() {
       kubectl port-forward "$1" "$2:$2"
     }
@@ -107,25 +107,24 @@ write_files:
       ========================================
       Bastion VM - ${environment} Environment
       ========================================
-      
+
       Available tools:
         - Azure CLI (az)
         - kubectl
         - Helm
         - PostgreSQL client (psql)
         - jq, git, curl, wget
-      
+
       Useful aliases:
         k, kgp, kgs, kgn, kd, kl
-      
+
       To login to Azure:
         az login --identity
-      
+
       To get AKS credentials:
         az aks get-credentials --resource-group <rg-name> --name <aks-name>
-      
+
       ========================================
     permissions: '0644'
 
 final_message: "Bastion VM provisioning completed. All tools installed successfully."
-

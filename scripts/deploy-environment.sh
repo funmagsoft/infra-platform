@@ -108,7 +108,7 @@ if [ ! -d ".terraform" ]; then
   fi
 else
   echo "Step 1: Terraform already initialized"
-  
+
   # Reconfigure backend to ensure it's up-to-date
   echo "  Reconfiguring backend..."
   terraform init -reconfigure -input=false > /dev/null 2>&1
@@ -201,24 +201,24 @@ if [ $? -eq 0 ]; then
   echo ""
   echo -e "${GREEN}✓ Deployment completed successfully!${NC}"
   echo -e "${GREEN}  Duration: ${DURATION_MIN}m ${DURATION_SEC}s${NC}"
-  
+
   # Clean up old plan file
   rm -f "$PLAN_FILE"
-  
+
   echo ""
   echo "Step 6: Exporting outputs..."
   OUTPUTS_DIR="${REPO_DIR}/outputs"
   mkdir -p "$OUTPUTS_DIR"
-  
+
   OUTPUT_FILE="${OUTPUTS_DIR}/terraform-outputs-${ENV}.json"
   if terraform output -json > "$OUTPUT_FILE"; then
     echo -e "${GREEN}✓ Outputs exported to: ${OUTPUT_FILE}${NC}"
   fi
-  
+
   echo ""
   echo "Step 7: Validating deployment..."
   "${SCRIPT_DIR}/validate-azure-resources.sh" || echo -e "${YELLOW}⚠ Validation had warnings${NC}"
-  
+
   echo ""
   echo -e "${GREEN}=== Deployment Complete ===${NC}"
   echo ""
@@ -228,7 +228,7 @@ if [ $? -eq 0 ]; then
   echo "  1. Review outputs:  terraform output"
   echo "  2. Test resources:  ${SCRIPT_DIR}/validate-all.sh"
   echo "  3. Access AKS:      az aks get-credentials --resource-group rg-ecare-${ENV} --name aks-ecare-${ENV}"
-  
+
 else
   echo ""
   echo -e "${RED}✗ Deployment failed!${NC}"
@@ -237,4 +237,3 @@ else
   echo "Review errors above and fix issues before retrying."
   exit 1
 fi
-

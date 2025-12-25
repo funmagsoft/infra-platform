@@ -197,4 +197,3 @@ From Phase 1 (infra-foundation):
 
 - Terraform >= 1.5.0
 - AzureRM Provider ~> 3.0
-

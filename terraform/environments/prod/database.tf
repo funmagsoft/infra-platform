@@ -29,4 +29,3 @@ module "postgresql" {
 
   tags = local.common_tags
 }
-
