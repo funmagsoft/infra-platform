@@ -21,7 +21,7 @@ if [ -z "$1" ] || [ -z "$2" ]; then
   echo ""
   echo "Arguments:"
   echo "  environment  - dev, test, stage, prod"
-  echo "  repository   - infra-foundation, infra-platform, infra-workload-identity"
+  echo "  repository   - infra-foundation, infra-platform, infra-identity"
   echo ""
   echo "Example:"
   echo "  $0 dev infra-platform"
@@ -40,9 +40,9 @@ if [[ ! "$ENV" =~ ^(dev|test|stage|prod)$ ]]; then
 fi
 
 # Validate repository
-if [[ ! "$REPO" =~ ^(infra-foundation|infra-platform|infra-workload-identity)$ ]]; then
+if [[ ! "$REPO" =~ ^(infra-foundation|infra-platform|infra-identity)$ ]]; then
   echo -e "${RED}Error: Invalid repository '${REPO}'${NC}"
-  echo "Must be one of: infra-foundation, infra-platform, infra-workload-identity"
+  echo "Must be one of: infra-foundation, infra-platform, infra-identity"
   exit 1
 fi
 

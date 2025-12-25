@@ -680,7 +680,7 @@ Selectively delete resources by GitRepository tag (useful for cleanup).
 **Options:**
 
 - `environment` - dev, test, stage, prod
-- `repository` - infra-foundation, infra-platform, infra-workload-identity
+- `repository` - infra-foundation, infra-platform, infra-identity
 
 **Examples:**
 
@@ -689,7 +689,7 @@ Selectively delete resources by GitRepository tag (useful for cleanup).
 ./scripts/delete-by-repository.sh dev infra-platform
 
 # Delete only workload identity resources
-./scripts/delete-by-repository.sh prod infra-workload-identity
+./scripts/delete-by-repository.sh prod infra-identity
 ```
 
 **What it does:**

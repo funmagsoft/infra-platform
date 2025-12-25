@@ -51,7 +51,7 @@ echo -e "${GREEN}Total resources: ${TOTAL_COUNT}${NC}"
 echo ""
 
 # Group by repository
-for REPO in "infra-foundation" "infra-platform" "infra-workload-identity" "untagged"; do
+for REPO in "infra-foundation" "infra-platform" "infra-identity" "untagged"; do
   echo -e "${YELLOW}=== ${REPO} ===${NC}"
 
   if [ "$REPO" == "untagged" ]; then
@@ -78,7 +78,7 @@ done
 echo "=== Summary ==="
 echo ""
 
-for REPO in "infra-foundation" "infra-platform" "infra-workload-identity"; do
+for REPO in "infra-foundation" "infra-platform" "infra-identity"; do
   COUNT=$(echo "$ALL_RESOURCES" | jq --arg repo "$REPO" '[.[] | select(.tags.GitRepository == $repo)] | length')
   echo -e "${REPO}: ${GREEN}${COUNT}${NC} resources"
 done
