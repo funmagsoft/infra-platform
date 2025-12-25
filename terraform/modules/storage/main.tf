@@ -33,7 +33,10 @@ resource "azurerm_storage_account" "this" {
   min_tls_version            = var.min_tls_version
   https_traffic_only_enabled = var.enable_https_traffic_only
 
-  # Network rules - allow during deployment (can be restricted later via network_rules)
+  # Network access configuration
+  # NOTE: public_network_access_enabled is set to true during initial deployment to allow Terraform
+  # to manage the storage account. Private Endpoints are configured below for secure access.
+  # In production, consider restricting public access after initial deployment via network_rules.
   public_network_access_enabled = true
 
   # Network rules commented out during initial deployment to allow Terraform access
